@@ -55,6 +55,16 @@ export async function GET(
     const chartHeight = 180;
     const barWidth = chartWidth / dailyData.length;
 
+    // Determine which dates to show based on number of bars
+    const showDateLabels = (index: number, total: number): boolean => {
+      if (total <= 7) return true; // Show all if 7 or fewer
+      if (total <= 14) return index % 2 === 0; // Show every other if 14 or fewer
+      if (total <= 21) return index % 3 === 0; // Show every 3rd if 21 or fewer
+      if (total <= 30) return index % 4 === 0; // Show every 4th if 30 or fewer
+      // For more than 30, show first, last, and every 5th
+      return index === 0 || index === total - 1 || index % 5 === 0;
+    };
+
     dailyData.forEach((day: any, i: number) => {
       const height = (day.promptCount / maxValue) * chartHeight;
       const x = 70 + (i * barWidth);
@@ -70,21 +80,24 @@ export async function GET(
         hachureAngle: 60
       }) as any);
 
-      const dateText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      dateText.setAttribute('x', String(x + (barWidth - 10) / 2));
-      dateText.setAttribute('y', '270');
-      dateText.setAttribute('text-anchor', 'middle');
-      dateText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-      dateText.setAttribute('font-size', '10');
-      dateText.setAttribute('fill', '#525252');
-      dateText.textContent = day.date.slice(5);
-      svg.appendChild(dateText);
+      // Only show selected date labels to avoid crowding
+      if (showDateLabels(i, dailyData.length)) {
+        const dateText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        dateText.setAttribute('x', String(x + (barWidth - 10) / 2));
+        dateText.setAttribute('y', '270');
+        dateText.setAttribute('text-anchor', 'middle');
+        dateText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+        dateText.setAttribute('font-size', '10');
+        dateText.setAttribute('fill', '#525252');
+        dateText.textContent = day.date.slice(5);
+        svg.appendChild(dateText);
+      }
     });
 
     const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    title.setAttribute('x', '300');
+    title.setAttribute('x', '60');
     title.setAttribute('y', '30');
-    title.setAttribute('text-anchor', 'middle');
+    title.setAttribute('text-anchor', 'start');
     title.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     title.setAttribute('font-size', '18');
     title.setAttribute('font-weight', 'bold');
@@ -97,9 +110,10 @@ export async function GET(
     avgText.setAttribute('y', '30');
     avgText.setAttribute('text-anchor', 'end');
     avgText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-    avgText.setAttribute('font-size', '12');
+    avgText.setAttribute('font-size', '13');
     avgText.setAttribute('fill', '#6366f1');
-    avgText.textContent = `Avg: ${data.data.promptsPerDay.averagePerDay.toFixed(1)}/day`;
+    avgText.setAttribute('font-weight', 'bold');
+    avgText.textContent = `${data.data.promptsPerDay.averagePerDay.toFixed(1)}/day`;
     svg.appendChild(avgText);
 
     for (let i = 0; i <= 4; i++) {
