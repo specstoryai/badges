@@ -4,11 +4,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { owner: string; name: string } }
+  { params }: { params: Promise<{ owner: string; name: string }> }
 ) {
+  const { owner, name } = await params;
   try {
     const res = await fetch(
-      `https://stats.specstory.com/analyze?repo=${params.owner}/${params.name}`
+      `https://stats.specstory.com/analyze?repo=${owner}/${name}`
     );
     
     if (!res.ok) {
@@ -86,7 +87,7 @@ export async function GET(
     title.setAttribute('font-size', '18');
     title.setAttribute('font-weight', 'bold');
     title.setAttribute('fill', '#18181b');
-    title.textContent = `Daily Prompts - ${params.owner}/${params.name}`;
+    title.textContent = `Daily Prompts - ${owner}/${name}`;
     svg.appendChild(title);
 
     const avgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -125,7 +126,7 @@ export async function GET(
       <svg width="600" height="300" xmlns="http://www.w3.org/2000/svg">
         <rect width="600" height="300" fill="#fafaf9"/>
         <text x="300" y="150" text-anchor="middle" font-family="system-ui" font-size="14" fill="#dc2626">
-          Failed to load data for ${params.owner}/${params.name}
+          Failed to load data for ${owner}/${name}
         </text>
       </svg>
     `;

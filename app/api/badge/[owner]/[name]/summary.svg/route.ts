@@ -4,11 +4,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { owner: string; name: string } }
+  { params }: { params: Promise<{ owner: string; name: string }> }
 ) {
+  const { owner, name } = await params;
   try {
     const res = await fetch(
-      `https://stats.specstory.com/analyze?repo=${params.owner}/${params.name}`
+      `https://stats.specstory.com/analyze?repo=${owner}/${name}`
     );
     
     if (!res.ok) {
@@ -70,7 +71,7 @@ export async function GET(
     titleText.setAttribute('font-size', '16');
     titleText.setAttribute('font-weight', 'bold');
     titleText.setAttribute('fill', '#78350f');
-    titleText.textContent = `${params.owner}/${params.name}`;
+    titleText.textContent = `${owner}/${name}`;
     svg.appendChild(titleText);
 
     const stats = data.data;

@@ -4,11 +4,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   request: Request,
-  { params }: { params: { owner: string; name: string } }
+  { params }: { params: Promise<{ owner: string; name: string }> }
 ) {
+  const { owner, name } = await params;
   try {
     const res = await fetch(
-      `https://stats.specstory.com/analyze?repo=${params.owner}/${params.name}`
+      `https://stats.specstory.com/analyze?repo=${owner}/${name}`
     );
     
     if (!res.ok) {
@@ -109,7 +110,7 @@ export async function GET(
     title.setAttribute('font-size', '16');
     title.setAttribute('font-weight', 'bold');
     title.setAttribute('fill', '#18181b');
-    title.textContent = `Prompt Trend - ${params.owner}/${params.name}`;
+    title.textContent = `Prompt Trend - ${owner}/${name}`;
     svg.appendChild(title);
 
     const trendArrow = data.data.promptsPerDay.dailyDetails.length > 1 && 
@@ -137,7 +138,7 @@ export async function GET(
       <svg width="600" height="200" xmlns="http://www.w3.org/2000/svg">
         <rect width="600" height="200" fill="#fefef8"/>
         <text x="300" y="100" text-anchor="middle" font-family="system-ui" font-size="14" fill="#dc2626">
-          Failed to load trend for ${params.owner}/${params.name}
+          Failed to load trend for ${owner}/${name}
         </text>
       </svg>
     `;
