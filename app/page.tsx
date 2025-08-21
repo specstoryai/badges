@@ -1,103 +1,160 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [repo, setRepo] = useState('specstoryai/tnyOffice');
+  const [baseUrl, setBaseUrl] = useState('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const getDemoUrl = (type: string) => {
+    const base = baseUrl || window.location.origin;
+    return `${base}/api/badge/${repo}/${type}.svg`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50 p-8">
+      <div className="max-w-6xl mx-auto">
+        <header className="mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            📊 Hand-Drawn GitHub Stats Badges
+          </h1>
+          <p className="text-gray-600">
+            Beautiful, sketchy-style badges for your GitHub repository stats.
+            Perfect for adding a personal touch to your README!
+          </p>
+        </header>
+
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border-2 border-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Try it with your repo:</h2>
+          <div className="flex gap-4 mb-4">
+            <input
+              type="text"
+              value={repo}
+              onChange={(e) => setRepo(e.target.value)}
+              placeholder="owner/repository"
+              className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <input
+              type="text"
+              value={baseUrl}
+              onChange={(e) => setBaseUrl(e.target.value)}
+              placeholder="Base URL (optional)"
+              className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
+          <p className="text-sm text-gray-500">
+            Enter a GitHub repository that has a .specstory/history directory with markdown files
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="space-y-8">
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📈 Daily Activity Chart</h3>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <img
+                src={getDemoUrl('daily')}
+                alt="Daily Activity"
+                className="w-full"
+                key={`daily-${repo}`}
+              />
+            </div>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Show Markdown
+              </summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
+{`![Daily Activity](${getDemoUrl('daily')})`}
+              </pre>
+            </details>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📊 Trend Line</h3>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <img
+                src={getDemoUrl('trend')}
+                alt="Trend"
+                className="w-full"
+                key={`trend-${repo}`}
+              />
+            </div>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Show Markdown
+              </summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
+{`![Trend](${getDemoUrl('trend')})`}
+              </pre>
+            </details>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📋 Summary Badge</h3>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <img
+                src={getDemoUrl('summary')}
+                alt="Summary"
+                className="w-full max-w-md"
+                key={`summary-${repo}`}
+              />
+            </div>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Show Markdown
+              </summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
+{`![Summary](${getDemoUrl('summary')})`}
+              </pre>
+            </details>
+          </div>
+
+          <div className="bg-amber-50 rounded-lg p-6 border-2 border-amber-200">
+            <h3 className="text-lg font-semibold mb-3">🎨 Features</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-start">
+                <span className="mr-2">✏️</span>
+                <span>Hand-drawn, sketchy style using Rough.js</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">🎯</span>
+                <span>Real-time data from your GitHub repository</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">⚡</span>
+                <span>Cached for 1 hour for optimal performance</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">📱</span>
+                <span>Responsive SVG that looks great everywhere</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">🌈</span>
+                <span>Multiple styles: charts, trends, and summaries</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📝 Example README</h3>
+            <pre className="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto text-sm">
+{`# My Awesome Project
+
+## 📊 Project Activity
+
+<!-- Hand-drawn daily activity chart -->
+![Daily Activity](${getDemoUrl('daily')})
+
+<!-- Sketchy trend line -->
+![Trend](${getDemoUrl('trend')})
+
+<!-- Summary badge -->
+![Summary](${getDemoUrl('summary')})
+
+These beautiful hand-drawn badges show real-time stats from our development process!`}
+            </pre>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
