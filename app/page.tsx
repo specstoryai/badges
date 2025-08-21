@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [repo, setRepo] = useState('specstoryai/tnyOffice');
   const [baseUrl, setBaseUrl] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getDemoUrl = (type: string) => {
+    if (!mounted) return '';
     const base = baseUrl || window.location.origin;
     return `${base}/api/badge/${repo}/${type}.svg`;
   };
@@ -51,12 +57,14 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
             <h3 className="text-lg font-semibold mb-3">📈 Daily Activity Chart</h3>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <img
-                src={getDemoUrl('daily')}
-                alt="Daily Activity"
-                className="w-full"
-                key={`daily-${repo}`}
-              />
+              {mounted && (
+                <img
+                  src={getDemoUrl('daily')}
+                  alt="Daily Activity"
+                  className="w-full"
+                  key={`daily-${repo}`}
+                />
+              )}
             </div>
             <details className="mt-4">
               <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
@@ -71,12 +79,14 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
             <h3 className="text-lg font-semibold mb-3">📊 Trend Line</h3>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <img
-                src={getDemoUrl('trend')}
-                alt="Trend"
-                className="w-full"
-                key={`trend-${repo}`}
-              />
+              {mounted && (
+                <img
+                  src={getDemoUrl('trend')}
+                  alt="Trend"
+                  className="w-full"
+                  key={`trend-${repo}`}
+                />
+              )}
             </div>
             <details className="mt-4">
               <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
@@ -91,12 +101,14 @@ export default function Home() {
           <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
             <h3 className="text-lg font-semibold mb-3">📋 Summary Badge</h3>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <img
-                src={getDemoUrl('summary')}
-                alt="Summary"
-                className="w-full max-w-md"
-                key={`summary-${repo}`}
-              />
+              {mounted && (
+                <img
+                  src={getDemoUrl('summary')}
+                  alt="Summary"
+                  className="w-full max-w-md"
+                  key={`summary-${repo}`}
+                />
+              )}
             </div>
             <details className="mt-4">
               <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
