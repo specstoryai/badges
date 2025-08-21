@@ -7,10 +7,12 @@ export async function GET(
   { params }: { params: Promise<{ owner: string; name: string }> }
 ) {
   const { owner, name } = await params;
+  const { searchParams } = new URL(request.url);
+  const branch = searchParams.get('branch');
+  
   try {
-    const res = await fetch(
-      `https://stats.specstory.com/analyze?repo=${owner}/${name}`
-    );
+    const url = `https://stats.specstory.com/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
+    const res = await fetch(url);
     
     if (!res.ok) {
       throw new Error(`API returned ${res.status}`);
