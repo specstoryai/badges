@@ -22,7 +22,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         <header className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            📊 Hand-Drawn GitHub Stats Badges
+            📊 SpecStory GitHub Stats Badges
           </h1>
           <p className="text-gray-600">
             Beautiful, sketchy-style badges for your GitHub repository stats.
@@ -54,6 +54,28 @@ export default function Home() {
         </div>
 
         <div className="space-y-8">
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📅 Activity Calendar</h3>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              {mounted && (
+                <img
+                  src={getDemoUrl('calendar')}
+                  alt="Activity Calendar"
+                  className="w-full"
+                  key={`calendar-${repo}`}
+                />
+              )}
+            </div>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Show Markdown
+              </summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
+{`![Activity Calendar](${getDemoUrl('calendar')})`}
+              </pre>
+            </details>
+          </div>
+
           <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
             <h3 className="text-lg font-semibold mb-3">📈 Daily Activity Chart</h3>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
@@ -116,28 +138,6 @@ export default function Home() {
               </summary>
               <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
 {`![Summary](${getDemoUrl('summary')})`}
-              </pre>
-            </details>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
-            <h3 className="text-lg font-semibold mb-3">📅 Activity Calendar</h3>
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              {mounted && (
-                <img
-                  src={getDemoUrl('calendar')}
-                  alt="Activity Calendar"
-                  className="w-full"
-                  key={`calendar-${repo}`}
-                />
-              )}
-            </div>
-            <details className="mt-4">
-              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
-                Show Markdown
-              </summary>
-              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
-{`![Activity Calendar](${getDemoUrl('calendar')})`}
               </pre>
             </details>
           </div>

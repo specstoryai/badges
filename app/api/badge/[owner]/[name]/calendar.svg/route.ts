@@ -77,6 +77,26 @@ export async function GET(
     title.textContent = `${monthName} - ${owner}/${name}`;
     svg.appendChild(title);
 
+    // Add SpecStory logo to top-left corner
+    const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    logoGroup.setAttribute('transform', 'translate(10, 10) scale(0.05)');
+    
+    const logoPaths = [
+      { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
+      { fill: '#EB7139', d: 'M86.582 151.263v397.082c-8.943.006-62.986 2.104-86.582-61.529V85.38c17.228 63.791 86.582 65.883 86.582 65.883Z' },
+      { fill: '#F6C768', d: 'M311.618 1.88V37.9L40.615 110.515c-8.409-7.978-15.35-18.062-20.643-30.504L311.619 1.88Z' },
+      { fill: '#fff', d: 'M96.804 129.873s-36.678-1.202-56.52-19.841L311.457 37.88l36.677 26.455-251.33 65.538Z' }
+    ];
+    
+    logoPaths.forEach(pathData => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('fill', pathData.fill);
+      path.setAttribute('d', pathData.d);
+      logoGroup.appendChild(path);
+    });
+    
+    svg.appendChild(logoGroup);
+
     // Day headers
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dayNames.forEach((day, i) => {
