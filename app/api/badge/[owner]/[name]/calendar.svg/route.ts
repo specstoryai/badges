@@ -45,7 +45,9 @@ export async function GET(
     // Determine which month to show
     let targetMonth: Date;
     if (month) {
-      targetMonth = new Date(month + '-01');
+      // Parse month correctly - split YYYY-MM and create date with UTC to avoid timezone issues
+      const [yearStr, monthStr] = month.split('-');
+      targetMonth = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
     } else if (dailyData.length > 0) {
       // Use the most recent month with data
       targetMonth = new Date(dailyData[dailyData.length - 1].date);
