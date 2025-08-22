@@ -131,14 +131,15 @@ export async function GET(
         }) as any);
       }
 
-      // Day number
+      // Day number - make it subtle
       const dayNum = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       dayNum.setAttribute('x', String(x + 10));
       dayNum.setAttribute('y', String(y + 20));
       dayNum.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-      dayNum.setAttribute('font-size', '14');
-      dayNum.setAttribute('font-weight', 'bold');
-      dayNum.setAttribute('fill', hasActivity ? '#15803d' : '#9ca3af');
+      dayNum.setAttribute('font-size', '12');
+      dayNum.setAttribute('font-weight', 'normal');
+      dayNum.setAttribute('fill', '#d2d6db');
+      dayNum.setAttribute('opacity', '0.8');
       dayNum.textContent = String(day);
       svg.appendChild(dayNum);
 
@@ -151,15 +152,15 @@ export async function GET(
         });
         svg.appendChild(checkPath as any);
 
-        // Prompt count
+        // Prompt count - make it prominent
         const countText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        countText.setAttribute('x', String(x + cellWidth - 10));
-        countText.setAttribute('y', String(y + cellHeight - 8));
+        countText.setAttribute('x', String(x + cellWidth - 8));
+        countText.setAttribute('y', String(y + cellHeight - 5));
         countText.setAttribute('text-anchor', 'end');
         countText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-        countText.setAttribute('font-size', '16');
+        countText.setAttribute('font-size', '20');
         countText.setAttribute('font-weight', 'bold');
-        countText.setAttribute('fill', '#15803d');
+        countText.setAttribute('fill', '#059669');
         countText.textContent = String(promptCount);
         svg.appendChild(countText);
       } else {
