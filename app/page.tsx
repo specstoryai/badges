@@ -120,6 +120,28 @@ export default function Home() {
             </details>
           </div>
 
+          <div className="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">📅 Activity Calendar</h3>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              {mounted && (
+                <img
+                  src={getDemoUrl('calendar')}
+                  alt="Activity Calendar"
+                  className="w-full"
+                  key={`calendar-${repo}`}
+                />
+              )}
+            </div>
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Show Markdown
+              </summary>
+              <pre className="mt-2 p-3 bg-gray-100 rounded text-xs overflow-x-auto">
+{`![Activity Calendar](${getDemoUrl('calendar')})`}
+              </pre>
+            </details>
+          </div>
+
           <div className="bg-amber-50 rounded-lg p-6 border-2 border-amber-200">
             <h3 className="text-lg font-semibold mb-3">🎨 Features</h3>
             <ul className="space-y-2 text-gray-700">
@@ -141,7 +163,7 @@ export default function Home() {
               </li>
               <li className="flex items-start">
                 <span className="mr-2">🌈</span>
-                <span>Multiple styles: charts, trends, and summaries</span>
+                <span>Multiple styles: charts, trends, summaries, and calendars</span>
               </li>
             </ul>
           </div>

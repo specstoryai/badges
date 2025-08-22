@@ -5,12 +5,13 @@ Beautiful, sketchy-style SVG badges for displaying GitHub repository statistics 
 ## ✨ Features
 
 - 🎨 **Hand-drawn style** using Rough.js for authentic sketchy appearance
-- 📈 **Three badge types**: Daily activity charts, trend lines, and summary badges
+- 📈 **Four badge types**: Daily charts, trend lines, summary badges, and activity calendars
 - 🔄 **Real-time data** from GitHub repositories via the SpecStory Stats API
 - ⚡ **Smart caching** with 1-hour TTL for optimal performance
 - 🌿 **Branch support** for analyzing different branches
 - 📱 **Responsive SVGs** that scale perfectly anywhere
 - 🎯 **Intelligent labeling** that adapts to data density
+- 📅 **Calendar view** with checkmarks for active days and X's for inactive days
 
 ## 🚀 Getting Started
 
@@ -77,6 +78,22 @@ Compact badge showing total prompts, daily average, and file count.
 ![Summary](https://your-app.vercel.app/api/badge/owner/repo/summary.svg)
 ```
 
+### 4. Activity Calendar
+Monthly calendar view showing daily activity with green checkmarks for active days and red X's for inactive days.
+
+```markdown
+![Calendar](https://your-app.vercel.app/api/badge/owner/repo/calendar.svg)
+```
+
+With options:
+```markdown
+<!-- Specific month -->
+![Calendar](https://your-app.vercel.app/api/badge/owner/repo/calendar.svg?month=2024-01)
+
+<!-- Different branch -->
+![Calendar](https://your-app.vercel.app/api/badge/owner/repo/calendar.svg?branch=develop)
+```
+
 ## 🎨 Visual Features
 
 - **Rough.js rendering** for authentic hand-drawn appearance
@@ -116,6 +133,13 @@ Generates a summary statistics badge.
 **Query Parameters:**
 - `branch` (optional): Specific branch to analyze
 
+### `GET /api/badge/[owner]/[name]/calendar.svg`
+Generates a monthly calendar view with activity indicators.
+
+**Query Parameters:**
+- `branch` (optional): Specific branch to analyze
+- `month` (optional): Specific month to display in YYYY-MM format (default: most recent month with data)
+
 ## 📝 Example Usage
 
 Add these badges to your README:
@@ -139,6 +163,9 @@ Add these badges to your README:
 
 <!-- Show gaps in activity -->
 ![With Zero Days](https://badges.yourdomain.com/api/badge/owner/repo/trend.svg?showZeroDays=true)
+
+<!-- Monthly calendar view -->
+![Activity Calendar](https://badges.yourdomain.com/api/badge/owner/repo/calendar.svg)
 ```
 
 ## 🔧 Configuration
@@ -200,7 +227,8 @@ badges/
 │   │           └── [name]/
 │   │               ├── daily.svg/route.ts    # Daily chart endpoint
 │   │               ├── trend.svg/route.ts    # Trend line endpoint
-│   │               └── summary.svg/route.ts  # Summary badge endpoint
+│   │               ├── summary.svg/route.ts  # Summary badge endpoint
+│   │               └── calendar.svg/route.ts # Calendar view endpoint
 │   ├── page.tsx                              # Demo page
 │   ├── layout.tsx                            # Root layout
 │   └── globals.css                           # Global styles
