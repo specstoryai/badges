@@ -144,8 +144,8 @@ export async function GET(
       svg.appendChild(dayNum);
 
       if (hasActivity) {
-        // Green checkmark for active days
-        const checkPath = rc.path(`M ${x + 25} ${y + 35} L ${x + 35} ${y + 45} L ${x + 55} ${y + 25}`, {
+        // Position checkmark with longer right upward stroke
+        const checkPath = rc.path(`M ${x + 20} ${y + 30} L ${x + 30} ${y + 40} L ${x + 50} ${y + 20}`, {
           stroke: '#22c55e',
           strokeWidth: 3,
           roughness: 1.5
@@ -154,7 +154,7 @@ export async function GET(
 
         // Prompt count - make it prominent
         const countText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        countText.setAttribute('x', String(x + cellWidth - 8));
+        countText.setAttribute('x', String(x + cellWidth - 5));
         countText.setAttribute('y', String(y + cellHeight - 5));
         countText.setAttribute('text-anchor', 'end');
         countText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
