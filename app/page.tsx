@@ -162,7 +162,7 @@ export default function Home() {
 <!-- Summary badge -->
 ![Summary](${getDemoUrl('summary')})
 
-These beautiful hand-drawn badges show real-time stats from our development process!`}
+These beautiful badges show real-time stats from our development process!`}
             </pre>
           </div>
         </div>
