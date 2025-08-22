@@ -9,6 +9,7 @@ export async function GET(
   const { owner, name } = await params;
   const { searchParams } = new URL(request.url);
   const branch = searchParams.get('branch');
+  const showZeroDays = searchParams.get('showZeroDays') === 'true';
   
   try {
     const url = `https://stats.specstory.com/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
@@ -49,8 +50,36 @@ export async function GET(
       stroke: '#525252'
     }) as any);
 
-    const dailyData = data.data.promptsPerDay.dailyDetails;
-    const maxValue = Math.max(...dailyData.map((d: any) => d.promptCount));
+    const rawDailyData = data.data.promptsPerDay.dailyDetails;
+    
+    // Fill in missing days with 0 prompts only if showZeroDays is true
+    const fillMissingDays = (data: any[]) => {
+      if (data.length === 0) return data;
+      
+      const result = [];
+      const startDate = new Date(data[0].date);
+      const endDate = new Date(data[data.length - 1].date);
+      
+      const dateMap = new Map(data.map(d => [d.date, d]));
+      
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        if (dateMap.has(dateStr)) {
+          result.push(dateMap.get(dateStr));
+        } else {
+          result.push({
+            date: dateStr,
+            promptCount: 0,
+            fileCount: 0
+          });
+        }
+      }
+      
+      return result;
+    };
+    
+    const dailyData = showZeroDays ? fillMissingDays(rawDailyData) : rawDailyData;
+    const maxValue = Math.max(...dailyData.map((d: any) => d.promptCount)) || 1;
     const chartWidth = 480;
     const chartHeight = 180;
     const barWidth = chartWidth / dailyData.length;
@@ -66,15 +95,19 @@ export async function GET(
     };
 
     dailyData.forEach((day: any, i: number) => {
-      const height = (day.promptCount / maxValue) * chartHeight;
+      const height = Math.max((day.promptCount / maxValue) * chartHeight, 2); // Min height of 2 for visibility
       const x = 70 + (i * barWidth);
       const y = 250 - height;
 
+      // Use different styling for zero/minimal values
+      const fillColor = day.promptCount === 0 ? 'rgba(156, 163, 175, 0.3)' : 'rgba(99, 102, 241, 0.6)';
+      const strokeColor = day.promptCount === 0 ? '#9ca3af' : '#6366f1';
+      
       svg.appendChild(rc.rectangle(x, y, barWidth - 10, height, {
-        fill: 'rgba(99, 102, 241, 0.6)',
-        fillStyle: 'hachure',
+        fill: fillColor,
+        fillStyle: day.promptCount === 0 ? 'solid' : 'hachure',
         strokeWidth: 1.5,
-        stroke: '#6366f1',
+        stroke: strokeColor,
         roughness: 1.5,
         hachureGap: 4,
         hachureAngle: 60

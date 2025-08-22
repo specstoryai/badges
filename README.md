@@ -45,9 +45,16 @@ Shows daily prompt counts as a hand-drawn bar chart with intelligent date labeli
 ![Daily Activity](https://your-app.vercel.app/api/badge/owner/repo/daily.svg)
 ```
 
-With branch:
+With options:
 ```markdown
+<!-- Specific branch -->
 ![Daily Activity](https://your-app.vercel.app/api/badge/owner/repo/daily.svg?branch=develop)
+
+<!-- Show zero-activity days as gray bars -->
+![Daily Activity](https://your-app.vercel.app/api/badge/owner/repo/daily.svg?showZeroDays=true)
+
+<!-- Combine parameters -->
+![Daily Activity](https://your-app.vercel.app/api/badge/owner/repo/daily.svg?branch=main&showZeroDays=true)
 ```
 
 ### 2. Trend Line
@@ -55,6 +62,12 @@ Displays activity trend with a sketchy line chart and data points.
 
 ```markdown
 ![Trend](https://your-app.vercel.app/api/badge/owner/repo/trend.svg)
+```
+
+With options:
+```markdown
+<!-- Show zero-activity days as gray dots -->
+![Trend](https://your-app.vercel.app/api/badge/owner/repo/trend.svg?showZeroDays=true)
 ```
 
 ### 3. Summary Badge
@@ -68,6 +81,10 @@ Compact badge showing total prompts, daily average, and file count.
 
 - **Rough.js rendering** for authentic hand-drawn appearance
 - **Hachure fill patterns** for bars and shapes
+- **Zero-day visualization** (optional):
+  - Gray bars/dots for days with no activity
+  - Helps visualize gaps in development
+  - Disabled by default for cleaner charts
 - **Adaptive date labels** that prevent overcrowding:
   - All dates shown for ≤7 days
   - Every 2nd date for ≤14 days
@@ -84,12 +101,14 @@ Generates a daily activity bar chart.
 
 **Query Parameters:**
 - `branch` (optional): Specific branch to analyze
+- `showZeroDays` (optional): Set to `true` to show days with no activity as gray bars (default: `false`)
 
 ### `GET /api/badge/[owner]/[name]/trend.svg`
 Generates a trend line chart.
 
 **Query Parameters:**
 - `branch` (optional): Specific branch to analyze
+- `showZeroDays` (optional): Set to `true` to show days with no activity as gray dots (default: `false`)
 
 ### `GET /api/badge/[owner]/[name]/summary.svg`
 Generates a summary statistics badge.
@@ -117,6 +136,9 @@ Add these badges to your README:
 
 <!-- Specific branch -->
 ![Feature Branch](https://badges.yourdomain.com/api/badge/owner/repo/daily.svg?branch=feature-xyz)
+
+<!-- Show gaps in activity -->
+![With Zero Days](https://badges.yourdomain.com/api/badge/owner/repo/trend.svg?showZeroDays=true)
 ```
 
 ## 🔧 Configuration

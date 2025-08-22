@@ -9,6 +9,7 @@ export async function GET(
   const { owner, name } = await params;
   const { searchParams } = new URL(request.url);
   const branch = searchParams.get('branch');
+  const showZeroDays = searchParams.get('showZeroDays') === 'true';
   
   try {
     const url = `https://stats.specstory.com/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
@@ -51,8 +52,36 @@ export async function GET(
       bowing: 0.5
     }) as any);
 
-    const dailyData = data.data.promptsPerDay.dailyDetails;
-    const maxValue = Math.max(...dailyData.map((d: any) => d.promptCount));
+    const rawDailyData = data.data.promptsPerDay.dailyDetails;
+    
+    // Fill in missing days with 0 prompts only if showZeroDays is true
+    const fillMissingDays = (data: any[]) => {
+      if (data.length === 0) return data;
+      
+      const result = [];
+      const startDate = new Date(data[0].date);
+      const endDate = new Date(data[data.length - 1].date);
+      
+      const dateMap = new Map(data.map(d => [d.date, d]));
+      
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        if (dateMap.has(dateStr)) {
+          result.push(dateMap.get(dateStr));
+        } else {
+          result.push({
+            date: dateStr,
+            promptCount: 0,
+            fileCount: 0
+          });
+        }
+      }
+      
+      return result;
+    };
+    
+    const dailyData = showZeroDays ? fillMissingDays(rawDailyData) : rawDailyData;
+    const maxValue = Math.max(...dailyData.map((d: any) => d.promptCount)) || 1;
     const chartWidth = 500;
     const chartHeight = 120;
     const stepX = chartWidth / (dailyData.length - 1 || 1);
@@ -84,24 +113,29 @@ export async function GET(
     }) as any);
 
     points.forEach((point, i) => {
-      svg.appendChild(rc.circle(point[0], point[1], 8, {
-        fill: '#10b981',
+      const isZero = dailyData[i].promptCount === 0;
+      
+      svg.appendChild(rc.circle(point[0], point[1], isZero ? 6 : 8, {
+        fill: isZero ? '#9ca3af' : '#10b981',
         fillStyle: 'solid',
-        stroke: '#10b981',
-        strokeWidth: 2,
+        stroke: isZero ? '#9ca3af' : '#10b981',
+        strokeWidth: isZero ? 1 : 2,
         roughness: 1.5
       }) as any);
 
-      const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      valueText.setAttribute('x', String(point[0]));
-      valueText.setAttribute('y', String(point[1] - 10));
-      valueText.setAttribute('text-anchor', 'middle');
-      valueText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-      valueText.setAttribute('font-size', '9');
-      valueText.setAttribute('fill', '#059669');
-      valueText.setAttribute('font-weight', 'bold');
-      valueText.textContent = String(dailyData[i].promptCount);
-      svg.appendChild(valueText);
+      // Only show value labels for non-zero points or if there are few points
+      if (!isZero || dailyData.length <= 7) {
+        const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valueText.setAttribute('x', String(point[0]));
+        valueText.setAttribute('y', String(point[1] - 10));
+        valueText.setAttribute('text-anchor', 'middle');
+        valueText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+        valueText.setAttribute('font-size', '9');
+        valueText.setAttribute('fill', isZero ? '#9ca3af' : '#059669');
+        valueText.setAttribute('font-weight', 'bold');
+        valueText.textContent = String(dailyData[i].promptCount);
+        svg.appendChild(valueText);
+      }
     });
 
     const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
