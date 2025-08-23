@@ -59,7 +59,7 @@ export default function Home() {
             </button>
           </div>
           <p className="text-sm text-gray-500">
-            Enter a GitHub repository that has a .specstory/history directory with markdown files. Press Enter or click "Get Stats" to update.
+            Enter a GitHub repository that has a .specstory/history directory with markdown files. Press Enter or click &quot;Get Stats&quot; to update.
           </p>
         </div>
 

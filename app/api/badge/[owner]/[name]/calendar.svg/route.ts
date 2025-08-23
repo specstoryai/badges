@@ -40,7 +40,7 @@ export async function GET(
 
     // Process daily data into a map
     const dailyData = data.data.promptsPerDay.dailyDetails;
-    const promptsByDate = new Map(dailyData.map((d: any) => [d.date, d.promptCount]));
+    const promptsByDate = new Map<string, number>(dailyData.map((d: any) => [d.date, d.promptCount]));
 
     // Determine which month to show
     let targetMonth: Date;
