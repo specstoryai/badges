@@ -122,11 +122,11 @@ export default function RepoPage({
     if (!config) return null;
 
     const containerClass = isPrimary 
-      ? "bg-white rounded-xl shadow-2xl p-8 border-2 border-indigo-200"
-      : "bg-white rounded-xl shadow-xl p-6";
+      ? "bg-white rounded-xl shadow-2xl p-4 md:p-8 border-2 border-indigo-200"
+      : "bg-white rounded-xl shadow-xl p-4 md:p-6";
 
     const imgClass = config.centered 
-      ? "max-w-md mx-auto" 
+      ? "w-full max-w-md mx-auto" 
       : "w-full";
 
     return (
@@ -197,13 +197,14 @@ export default function RepoPage({
     <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
       {/* Hero Section with Repo Stats */}
       <div className="bg-white shadow-lg border-b-2 border-gray-200">
-        <div className="max-w-6xl mx-auto px-8 py-12">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="text-left">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 🤖 AI Coding Activity
               </h1>
-              <p className="text-xl text-gray-600">
+              {/* Hide repo text on smaller screens - input serves as display */}
+              <p className="hidden md:block text-xl text-gray-600">
                 <span className="font-mono bg-gray-100 px-2 py-1 rounded">{repo}</span>
                 {branch && (
                   <span className="ml-2 text-sm font-mono bg-indigo-100 px-2 py-1 rounded">
@@ -212,7 +213,7 @@ export default function RepoPage({
                 )}
               </p>
             </div>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-2 md:gap-4 items-center w-full md:w-auto">
               <input
                 type="text"
                 value={repoInput}
@@ -220,20 +221,21 @@ export default function RepoPage({
                 onKeyDown={handleKeyDown}
                 onBlur={updateBadges}
                 placeholder="owner/repository"
-                className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                className="flex-1 md:flex-none px-3 md:px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-sm md:text-base"
               />
               <button
                 onClick={updateBadges}
-                className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-4 md:px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors text-sm md:text-base"
               >
-                View Stats
+                <span className="md:hidden">View</span>
+                <span className="hidden md:inline">View Stats</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
         {/* Main Stats Display */}
         <div className="space-y-8 mb-16">
           {renderBadges()}
