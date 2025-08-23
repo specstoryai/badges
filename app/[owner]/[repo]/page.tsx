@@ -223,113 +223,6 @@ export default function RepoPage({
               </button>
             </div>
           </div>
-          
-          {/* Customization Controls */}
-          {repoParams && (
-          <div className="flex flex-wrap gap-3 text-sm">
-            <label className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border">
-              <span className="text-gray-600">Primary:</span>
-              <select 
-                value={primary}
-                onChange={(e) => {
-                  if (!repoParams) return;
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (e.target.value === 'calendar') {
-                    params.delete('primary');
-                  } else {
-                    params.set('primary', e.target.value);
-                  }
-                  router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
-                }}
-                className="border-0 focus:outline-none bg-transparent"
-              >
-                <option value="calendar">Calendar</option>
-                <option value="daily">Daily</option>
-                <option value="trend">Trend</option>
-                <option value="summary">Summary</option>
-              </select>
-            </label>
-            
-            {primary === 'calendar' && (
-              <label className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border">
-                <span className="text-gray-600">Month:</span>
-                <input
-                  type="month"
-                  value={month || ''}
-                  onChange={(e) => {
-                    if (!repoParams) return;
-                    const params = new URLSearchParams(searchParams.toString());
-                    if (e.target.value) {
-                      params.set('month', e.target.value);
-                    } else {
-                      params.delete('month');
-                    }
-                    router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
-                  }}
-                  className="border-0 focus:outline-none bg-transparent"
-                />
-              </label>
-            )}
-            
-            {(primary === 'daily' || primary === 'trend') && (
-              <label className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border">
-                <input
-                  type="checkbox"
-                  checked={showZeroDays}
-                  onChange={(e) => {
-                    if (!repoParams) return;
-                    const params = new URLSearchParams(searchParams.toString());
-                    if (e.target.checked) {
-                      params.set('showZeroDays', 'true');
-                    } else {
-                      params.delete('showZeroDays');
-                    }
-                    router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
-                  }}
-                />
-                <span className="text-gray-600">Show zero days</span>
-              </label>
-            )}
-            
-            <label className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border">
-              <span className="text-gray-600">Branch:</span>
-              <input
-                type="text"
-                value={branch || ''}
-                placeholder="main"
-                onChange={(e) => {
-                  if (!repoParams) return;
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (e.target.value) {
-                    params.set('branch', e.target.value);
-                  } else {
-                    params.delete('branch');
-                  }
-                  router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
-                }}
-                className="border-0 focus:outline-none bg-transparent w-24"
-              />
-            </label>
-            
-            <label className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border">
-              <input
-                type="checkbox"
-                checked={hideSecondary}
-                onChange={(e) => {
-                  if (!repoParams) return;
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (e.target.checked) {
-                    params.set('hideSecondary', 'true');
-                  } else {
-                    params.delete('hideSecondary');
-                  }
-                  router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
-                }}
-              />
-              <span className="text-gray-600">Hide secondary badges</span>
-            </label>
-          </div>
-          )}
         </div>
       </div>
 
@@ -352,15 +245,148 @@ export default function RepoPage({
 ![Trend](${getDemoUrl('trend')})
 ![Summary](${getDemoUrl('summary')})`}
               </pre>
-              <div className="mt-4 text-xs text-gray-500">
-                <p className="font-semibold mb-1">Query Parameters:</p>
-                <ul className="space-y-1">
-                  <li>• <code className="bg-gray-100 px-1">branch</code>: Specify git branch</li>
-                  <li>• <code className="bg-gray-100 px-1">month</code>: Calendar month (YYYY-MM)</li>
-                  <li>• <code className="bg-gray-100 px-1">showZeroDays</code>: Include zero-activity days in charts</li>
-                  <li>• <code className="bg-gray-100 px-1">primary</code>: Choose main badge (calendar/daily/trend/summary)</li>
-                  <li>• <code className="bg-gray-100 px-1">hideSecondary</code>: Show only primary badge</li>
-                </ul>
+              <div className="mt-4">
+                <h4 className="font-semibold text-sm text-gray-700 mb-3">🎛️ Customize Your Badges with URL Query Parameters</h4>
+                
+                {repoParams && (
+                <div className="space-y-3 text-xs">
+                  {/* Primary Badge Selection */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-32 pt-1">
+                      <code className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">primary</code>
+                    </div>
+                    <div className="flex-1">
+                      <select 
+                        value={primary}
+                        onChange={(e) => {
+                          if (!repoParams) return;
+                          const params = new URLSearchParams(searchParams.toString());
+                          if (e.target.value === 'calendar') {
+                            params.delete('primary');
+                          } else {
+                            params.set('primary', e.target.value);
+                          }
+                          router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                        }}
+                        className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-indigo-500"
+                      >
+                        <option value="calendar">📅 Calendar</option>
+                        <option value="daily">📈 Daily</option>
+                        <option value="trend">📊 Trend</option>
+                        <option value="summary">📋 Summary</option>
+                      </select>
+                      <p className="text-gray-500 mt-1">Choose which badge displays prominently</p>
+                    </div>
+                  </div>
+
+                  {/* Branch Selection */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-32 pt-1">
+                      <code className="bg-green-100 text-green-700 px-2 py-0.5 rounded">branch</code>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={branch || ''}
+                        placeholder="main"
+                        onChange={(e) => {
+                          if (!repoParams) return;
+                          const params = new URLSearchParams(searchParams.toString());
+                          if (e.target.value) {
+                            params.set('branch', e.target.value);
+                          } else {
+                            params.delete('branch');
+                          }
+                          router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                        }}
+                        className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-green-500"
+                      />
+                      <p className="text-gray-500 mt-1">Specify git branch to analyze</p>
+                    </div>
+                  </div>
+
+                  {/* Month Selection */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-32 pt-1">
+                      <code className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">month</code>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="month"
+                        value={month || ''}
+                        onChange={(e) => {
+                          if (!repoParams) return;
+                          const params = new URLSearchParams(searchParams.toString());
+                          if (e.target.value) {
+                            params.set('month', e.target.value);
+                          } else {
+                            params.delete('month');
+                          }
+                          router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                        }}
+                        className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-purple-500"
+                      />
+                      <p className="text-gray-500 mt-1">Calendar month (YYYY-MM format, applies to calendar badge)</p>
+                    </div>
+                  </div>
+
+                  {/* Show Zero Days */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-32 pt-1">
+                      <code className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded">showZeroDays</code>
+                    </div>
+                    <div className="flex-1">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={showZeroDays}
+                          onChange={(e) => {
+                            if (!repoParams) return;
+                            const params = new URLSearchParams(searchParams.toString());
+                            if (e.target.checked) {
+                              params.set('showZeroDays', 'true');
+                            } else {
+                              params.delete('showZeroDays');
+                            }
+                            router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm">Include zero-activity days</span>
+                      </label>
+                      <p className="text-gray-500 mt-1">Show days with no activity as gray bars/dots (daily & trend badges)</p>
+                    </div>
+                  </div>
+
+                  {/* Hide Secondary Badges */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-32 pt-1">
+                      <code className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded">hideSecondary</code>
+                    </div>
+                    <div className="flex-1">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={hideSecondary}
+                          onChange={(e) => {
+                            if (!repoParams) return;
+                            const params = new URLSearchParams(searchParams.toString());
+                            if (e.target.checked) {
+                              params.set('hideSecondary', 'true');
+                            } else {
+                              params.delete('hideSecondary');
+                            }
+                            router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm">Show only primary badge</span>
+                      </label>
+                      <p className="text-gray-500 mt-1">Hide additional metrics for focused view</p>
+                    </div>
+                  </div>
+                </div>
+                )}
               </div>
             </div>
 
