@@ -88,17 +88,20 @@ export default function RepoPage({
       calendar: {
         title: '📅 Monthly Activity',
         alt: 'Activity Calendar',
-        fullWidth: true
+        fullWidth: true,
+        centered: false
       },
       daily: {
         title: '📈 Daily Prompts',
         alt: 'Daily Activity',
-        fullWidth: false
+        fullWidth: false,
+        centered: false
       },
       trend: {
         title: '📊 Trend Analysis',
         alt: 'Trend',
-        fullWidth: false
+        fullWidth: false,
+        centered: false
       },
       summary: {
         title: '📋 Quick Summary',
