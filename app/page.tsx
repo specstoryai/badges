@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [repoInput, setRepoInput] = useState('specstoryai/tnyOffice');
   const [repo, setRepo] = useState('specstoryai/tnyOffice');
-  const [baseUrl, setBaseUrl] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -12,9 +12,18 @@ export default function Home() {
   }, []);
 
   const getDemoUrl = (type: string) => {
-    if (!mounted) return '';
-    const base = baseUrl || window.location.origin;
-    return `${base}/api/badge/${repo}/${type}.svg`;
+    if (!mounted || typeof window === 'undefined') return '';
+    return `${window.location.origin}/api/badge/${repo}/${type}.svg`;
+  };
+
+  const updateBadges = () => {
+    setRepo(repoInput);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      updateBadges();
+    }
   };
 
   return (
@@ -22,7 +31,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         <header className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            📊 SpecStory GitHub Stats Badges
+            📊 Hand-Drawn GitHub Stats Badges
           </h1>
           <p className="text-gray-600">
             Beautiful, sketchy-style badges for your GitHub repository stats.
@@ -35,21 +44,22 @@ export default function Home() {
           <div className="flex gap-4 mb-4">
             <input
               type="text"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
+              value={repoInput}
+              onChange={(e) => setRepoInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onBlur={updateBadges}
               placeholder="owner/repository"
               className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
             />
-            <input
-              type="text"
-              value={baseUrl}
-              onChange={(e) => setBaseUrl(e.target.value)}
-              placeholder="Base URL (optional)"
-              className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-            />
+            <button
+              onClick={updateBadges}
+              className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Get Stats
+            </button>
           </div>
           <p className="text-sm text-gray-500">
-            Enter a GitHub repository that has a .specstory/history directory with markdown files
+            Enter a GitHub repository that has a .specstory/history directory with markdown files. Press Enter or click "Get Stats" to update.
           </p>
         </div>
 
