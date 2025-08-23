@@ -77,25 +77,7 @@ export async function GET(
     title.textContent = `${monthName} - ${owner}/${name}`;
     svg.appendChild(title);
 
-    // Add SpecStory logo to top-left corner
-    const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    logoGroup.setAttribute('transform', 'translate(10, 10) scale(0.05)');
-    
-    const logoPaths = [
-      { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
-      { fill: '#EB7139', d: 'M86.582 151.263v397.082c-8.943.006-62.986 2.104-86.582-61.529V85.38c17.228 63.791 86.582 65.883 86.582 65.883Z' },
-      { fill: '#F6C768', d: 'M311.618 1.88V37.9L40.615 110.515c-8.409-7.978-15.35-18.062-20.643-30.504L311.619 1.88Z' },
-      { fill: '#fff', d: 'M96.804 129.873s-36.678-1.202-56.52-19.841L311.457 37.88l36.677 26.455-251.33 65.538Z' }
-    ];
-    
-    logoPaths.forEach(pathData => {
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('fill', pathData.fill);
-      path.setAttribute('d', pathData.d);
-      logoGroup.appendChild(path);
-    });
-    
-    svg.appendChild(logoGroup);
+    // We'll add the logo at the bottom right later
 
     // Day headers
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -203,11 +185,11 @@ export async function GET(
       }
     }
 
-    // Legend
+    // Legend - positioned on the left
     const legendY = startY + Math.ceil((startWeekday + daysInMonth) / 7) * 70 + 20;
     
     // Active day legend
-    svg.appendChild(rc.rectangle(200, legendY, 20, 20, {
+    svg.appendChild(rc.rectangle(40, legendY, 20, 20, {
       fill: 'rgba(34, 197, 94, 0.2)',
       fillStyle: 'solid',
       stroke: '#22c55e',
@@ -216,7 +198,7 @@ export async function GET(
     }) as any);
     
     const activeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    activeLabel.setAttribute('x', '230');
+    activeLabel.setAttribute('x', '70');
     activeLabel.setAttribute('y', String(legendY + 15));
     activeLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     activeLabel.setAttribute('font-size', '12');
@@ -225,7 +207,7 @@ export async function GET(
     svg.appendChild(activeLabel);
 
     // Inactive day legend
-    svg.appendChild(rc.rectangle(380, legendY, 20, 20, {
+    svg.appendChild(rc.rectangle(200, legendY, 20, 20, {
       fill: 'rgba(156, 163, 175, 0.1)',
       fillStyle: 'solid',
       stroke: '#e5e7eb',
@@ -234,7 +216,7 @@ export async function GET(
     }) as any);
     
     const inactiveLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    inactiveLabel.setAttribute('x', '410');
+    inactiveLabel.setAttribute('x', '230');
     inactiveLabel.setAttribute('y', String(legendY + 15));
     inactiveLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     inactiveLabel.setAttribute('font-size', '12');
@@ -242,29 +224,37 @@ export async function GET(
     inactiveLabel.textContent = 'No activity';
     svg.appendChild(inactiveLabel);
 
-    // Stats summary - count only for the displayed month
-    let monthActiveDays = 0;
-    let monthTotalPrompts = 0;
+    // Add SpecStory logo and text in bottom right on same line
+    const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    logoGroup.setAttribute('transform', `translate(540, ${legendY - 5}) scale(0.04)`);
     
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const promptCount = promptsByDate.get(dateStr) || 0;
-      if (promptCount > 0) {
-        monthActiveDays++;
-        monthTotalPrompts += promptCount;
-      }
-    }
+    const logoPaths = [
+      { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
+      { fill: '#EB7139', d: 'M86.582 151.263v397.082c-8.943.006-62.986 2.104-86.582-61.529V85.38c17.228 63.791 86.582 65.883 86.582 65.883Z' },
+      { fill: '#F6C768', d: 'M311.618 1.88V37.9L40.615 110.515c-8.409-7.978-15.35-18.062-20.643-30.504L311.619 1.88Z' },
+      { fill: '#fff', d: 'M96.804 129.873s-36.678-1.202-56.52-19.841L311.457 37.88l36.677 26.455-251.33 65.538Z' }
+    ];
     
-    const statsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    statsText.setAttribute('x', '350');
-    statsText.setAttribute('y', String(legendY + 45));
-    statsText.setAttribute('text-anchor', 'middle');
-    statsText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-    statsText.setAttribute('font-size', '13');
-    statsText.setAttribute('fill', '#6366f1');
-    statsText.setAttribute('font-weight', 'bold');
-    statsText.textContent = `${monthActiveDays} active days • ${monthTotalPrompts} total prompts`;
-    svg.appendChild(statsText);
+    logoPaths.forEach(pathData => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('fill', pathData.fill);
+      path.setAttribute('d', pathData.d);
+      logoGroup.appendChild(path);
+    });
+    
+    svg.appendChild(logoGroup);
+    
+    // "by SpecStory.com" text - positioned to the right of the logo and vertically centered
+    const byText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    byText.setAttribute('x', '565');
+    byText.setAttribute('y', String(legendY + 10));  // Adjusted to center with logo
+    byText.setAttribute('text-anchor', 'start');
+    byText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    byText.setAttribute('font-size', '11');
+    byText.setAttribute('fill', '#6b7280');
+    byText.setAttribute('dominant-baseline', 'middle');  // Center text vertically
+    byText.textContent = 'by SpecStory.com';
+    svg.appendChild(byText);
 
     return new Response(svg.outerHTML, {
       headers: {

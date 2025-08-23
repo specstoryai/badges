@@ -140,7 +140,7 @@ export async function GET(
     filesLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     filesLabel.setAttribute('font-size', '11');
     filesLabel.setAttribute('fill', '#78350f');
-    filesLabel.textContent = 'Files';
+    filesLabel.textContent = 'Sessions';
     svg.appendChild(filesLabel);
 
     svg.appendChild(rc.line(140, 50, 140, 90, {
@@ -172,9 +172,9 @@ export async function GET(
     }
     svg.appendChild(dateText);
 
-    // Add SpecStory logo to top-left corner
+    // Add SpecStory logo to bottom-right corner
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    logoGroup.setAttribute('transform', 'translate(10, 10) scale(0.04)');
+    logoGroup.setAttribute('transform', 'translate(370, 85) scale(0.04)');
     
     const logoPaths = [
       { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },

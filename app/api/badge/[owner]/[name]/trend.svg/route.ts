@@ -30,8 +30,8 @@ export async function GET(
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', '600');
-    svg.setAttribute('height', '200');
-    svg.setAttribute('viewBox', '0 0 600 200');
+    svg.setAttribute('height', '220');
+    svg.setAttribute('viewBox', '0 0 600 220');
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     
     svg.style.backgroundColor = '#fefef8';
@@ -163,9 +163,9 @@ export async function GET(
     trendText.textContent = trendArrow;
     svg.appendChild(trendText);
 
-    // Add SpecStory logo to top-left corner
+    // Add SpecStory logo and text in bottom right on same line
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    logoGroup.setAttribute('transform', 'translate(10, 10) scale(0.04)');
+    logoGroup.setAttribute('transform', 'translate(455, 185) scale(0.04)');
     
     const logoPaths = [
       { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
@@ -182,6 +182,18 @@ export async function GET(
     });
     
     svg.appendChild(logoGroup);
+    
+    // "by SpecStory.com" text - positioned to the right of the logo and vertically centered
+    const byText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    byText.setAttribute('x', '480');
+    byText.setAttribute('y', '195');
+    byText.setAttribute('text-anchor', 'start');
+    byText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    byText.setAttribute('font-size', '11');
+    byText.setAttribute('fill', '#6b7280');
+    byText.setAttribute('dominant-baseline', 'middle');
+    byText.textContent = 'by SpecStory.com';
+    svg.appendChild(byText);
 
     return new Response(svg.outerHTML, {
       headers: {

@@ -129,12 +129,19 @@ export default function RepoPage({
             <h3 className="text-lg font-semibold mb-3">{config.title}</h3>
           )}
           {mounted && (
-            <img
-              src={getDemoUrl(type)}
-              alt={config.alt}
-              className={imgClass}
-              key={`${type}-${repo}-${branch}-${month}-${showZeroDays}`}
-            />
+            <a 
+              href={getDemoUrl(type)} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              <img
+                src={getDemoUrl(type)}
+                alt={config.alt}
+                className={imgClass}
+                key={`${type}-${repo}-${branch}-${month}-${showZeroDays}`}
+              />
+            </a>
           )}
         </div>
       </div>
