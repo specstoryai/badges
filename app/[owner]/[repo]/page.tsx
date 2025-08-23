@@ -29,6 +29,13 @@ export default function RepoPage({
     setMounted(true);
   }, [params]);
 
+  // Update title whenever repoParams changes
+  useEffect(() => {
+    if (repoParams) {
+      document.title = `${repoParams.owner}/${repoParams.repo} - AI Coding Activity`;
+    }
+  }, [repoParams]);
+
   const repo = repoParams ? `${repoParams.owner}/${repoParams.repo}` : '';
 
   const getDemoUrl = (type: string) => {
@@ -77,7 +84,7 @@ export default function RepoPage({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       updateBadges();
     }
@@ -210,7 +217,7 @@ export default function RepoPage({
                 type="text"
                 value={repoInput}
                 onChange={(e) => setRepoInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 onBlur={updateBadges}
                 placeholder="owner/repository"
                 className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
