@@ -11,6 +11,8 @@ export default function RepoPage({
   const [repoParams, setRepoParams] = useState<{ owner: string; repo: string } | null>(null);
   const [repoInput, setRepoInput] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [branchInput, setBranchInput] = useState('');
+  const [monthInput, setMonthInput] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -35,6 +37,12 @@ export default function RepoPage({
       document.title = `${repoParams.owner}/${repoParams.repo} - AI Coding Activity`;
     }
   }, [repoParams]);
+
+  // Initialize input values from URL params
+  useEffect(() => {
+    setBranchInput(branch || '');
+    setMonthInput(month || '');
+  }, [branch, month]);
 
   const repo = repoParams ? `${repoParams.owner}/${repoParams.repo}` : '';
 
@@ -88,6 +96,34 @@ export default function RepoPage({
     if (e.key === 'Enter') {
       updateBadges();
     }
+  };
+
+  const handleBranchSubmit = () => {
+    if (!repoParams) return;
+    // Only submit if value actually changed
+    if (branchInput === (branch || '')) return;
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (branchInput) {
+      params.set('branch', branchInput);
+    } else {
+      params.delete('branch');
+    }
+    router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+  };
+
+  const handleMonthSubmit = () => {
+    if (!repoParams) return;
+    // Only submit if value actually changed
+    if (monthInput === (month || '')) return;
+    
+    const params = new URLSearchParams(searchParams.toString());
+    if (monthInput) {
+      params.set('month', monthInput);
+    } else {
+      params.delete('month');
+    }
+    router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
   };
 
   const renderBadge = (type: string, isPrimary: boolean = false) => {
@@ -296,17 +332,14 @@ export default function RepoPage({
                     <div className="flex-1">
                       <input
                         type="text"
-                        value={branch || ''}
+                        value={branchInput}
                         placeholder="main"
-                        onChange={(e) => {
-                          if (!repoParams) return;
-                          const params = new URLSearchParams(searchParams.toString());
-                          if (e.target.value) {
-                            params.set('branch', e.target.value);
-                          } else {
-                            params.delete('branch');
+                        onChange={(e) => setBranchInput(e.target.value)}
+                        onBlur={handleBranchSubmit}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleBranchSubmit();
                           }
-                          router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
                         }}
                         className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-green-500"
                       />
@@ -322,16 +355,28 @@ export default function RepoPage({
                     <div className="flex-1">
                       <input
                         type="month"
-                        value={month || ''}
+                        value={monthInput}
                         onChange={(e) => {
-                          if (!repoParams) return;
-                          const params = new URLSearchParams(searchParams.toString());
-                          if (e.target.value) {
-                            params.set('month', e.target.value);
-                          } else {
-                            params.delete('month');
+                          setMonthInput(e.target.value);
+                          // For month picker, onChange typically means user selected from calendar widget
+                          // We should update immediately in that case
+                          if (e.target.value !== month) {
+                            // Only submit if the value actually changed
+                            if (!repoParams) return;
+                            const params = new URLSearchParams(searchParams.toString());
+                            if (e.target.value) {
+                              params.set('month', e.target.value);
+                            } else {
+                              params.delete('month');
+                            }
+                            router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
                           }
-                          router.push(`/${repoParams.owner}/${repoParams.repo}?${params.toString()}`);
+                        }}
+                        onBlur={handleMonthSubmit}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleMonthSubmit();
+                          }
                         }}
                         className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:border-purple-500"
                       />
