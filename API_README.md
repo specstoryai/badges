@@ -1,6 +1,6 @@
 # Stats API - Go Implementation
 
-A lightweight, memory-efficient API for analyzing GitHub repositories to count pattern occurrences in markdown documentation files. This Go implementation focuses on counting "_**User**_" occurrences in `.specstory/history` directories.
+A lightweight, memory-efficient API for analyzing GitHub repositories to count pattern occurrences in markdown documentation files and track commit activity. This Go implementation counts "_**User**_" occurrences in `.specstory/history` directories (if present) and provides commit statistics for any GitHub repository.
 
 ## Features
 
@@ -8,6 +8,8 @@ A lightweight, memory-efficient API for analyzing GitHub repositories to count p
 - 📊 Analyzes public GitHub repositories
 - 🔍 Counts specific pattern occurrences in markdown files
 - 📈 Daily statistics with averages, medians, and trends
+- 📅 Commit activity tracking for any repository
+- 🔄 Works with or without `.specstory/history` directory
 - 💾 Redis caching for blazing-fast repeated analyses
 - 🔑 Content-addressable cache using Git blob SHAs
 - 📝 Comprehensive logging with environment-aware configuration
@@ -128,7 +130,7 @@ Returns API information.
 
 #### `GET /analyze`
 
-Analyzes a public GitHub repository's `.specstory/history` directory to count prompt occurrences and provide detailed daily statistics.
+Analyzes a public GitHub repository to count prompt occurrences (if `.specstory/history` exists) and provide detailed daily statistics including commit activity.
 
 **Query Parameters:**
 - `repo` (required): GitHub repository in format `owner/repository`
@@ -149,33 +151,59 @@ GET /analyze?repo=specstoryai/tnyOffice&branch=develop  # Specific branch
     "repo": "specstoryai/tnyOffice",
     "branch": "main",
     "promptCount": 271,
-    "filesProcessed": 15,
+    "sessionsProcessed": 15,
     "processingTimeMs": 234,
-    "promptsPerDay": {
-      "averagePerDay": 90.33,
-      "medianPerDay": 37,
-      "maxPerDay": 202,
-      "minPerDay": 32,
-      "totalDays": 3,
+    "totalCommits": 83,
+    "dailyStats": {
+      "promptsAverage": 90.33,
+      "promptsMedian": 37,
+      "promptsMax": 202,
+      "promptsMin": 32,
+      "commitsAverage": 13.83,
+      "commitsMedian": 8,
+      "commitsMax": 47,
+      "commitsMin": 1,
+      "totalDays": 6,
       "dateRange": {
         "start": "2025-07-19",
-        "end": "2025-07-21"
+        "end": "2025-08-20"
       },
       "dailyDetails": [
         {
           "date": "2025-07-19",
           "promptCount": 37,
-          "fileCount": 1
+          "sessionCount": 1,
+          "commitCount": 23
         },
         {
           "date": "2025-07-20",
           "promptCount": 202,
-          "fileCount": 11
+          "sessionCount": 11,
+          "commitCount": 47
         },
         {
           "date": "2025-07-21",
           "promptCount": 32,
-          "fileCount": 3
+          "sessionCount": 3,
+          "commitCount": 2
+        },
+        {
+          "date": "2025-08-18",
+          "promptCount": 0,
+          "sessionCount": 0,
+          "commitCount": 6
+        },
+        {
+          "date": "2025-08-19",
+          "promptCount": 0,
+          "sessionCount": 0,
+          "commitCount": 4
+        },
+        {
+          "date": "2025-08-20",
+          "promptCount": 0,
+          "sessionCount": 0,
+          "commitCount": 1
         }
       ]
     }
@@ -184,17 +212,26 @@ GET /analyze?repo=specstoryai/tnyOffice&branch=develop  # Specific branch
 ```
 
 **Response Fields:**
-- `promptCount`: Total number of prompts found across all files
-- `filesProcessed`: Number of markdown files analyzed
+- `promptCount`: Total number of prompts found across all sessions (0 if no .specstory/history)
+- `sessionsProcessed`: Number of session files analyzed  
 - `processingTimeMs`: Time taken to process the repository
-- `promptsPerDay`: Daily statistics (may be null if no dates found)
-  - `averagePerDay`: Average prompts per day
-  - `medianPerDay`: Median prompts per day
-  - `maxPerDay`: Maximum prompts in a single day
-  - `minPerDay`: Minimum prompts in a single day
+- `totalCommits`: Total number of commits in the repository/branch
+- `dailyStats`: Daily statistics (may be null if no activity)
+  - `promptsAverage`: Average prompts per day
+  - `promptsMedian`: Median prompts per day
+  - `promptsMax`: Maximum prompts in a single day
+  - `promptsMin`: Minimum prompts in a single day
+  - `commitsAverage`: Average commits per day
+  - `commitsMedian`: Median commits per day
+  - `commitsMax`: Maximum commits in a single day
+  - `commitsMin`: Minimum commits in a single day
   - `totalDays`: Number of unique days with activity
   - `dateRange`: Start and end dates of activity
   - `dailyDetails`: Array of per-day statistics sorted by date
+    - `date`: Date in YYYY-MM-DD format
+    - `promptCount`: Number of prompts on this day
+    - `sessionCount`: Number of sessions on this day
+    - `commitCount`: Number of git commits on this day
 
 **How to Use This Endpoint:**
 
@@ -208,27 +245,33 @@ GET /analyze?repo=specstoryai/tnyOffice&branch=develop  # Specific branch
    curl "https://stats.specstory.com/analyze?repo=owner/repo&branch=develop"
    ```
 
-3. **Extract Daily Average (using jq):**
+3. **Extract Statistics (using jq):**
    ```bash
+   # Get prompts average per day
    curl -s "https://stats.specstory.com/analyze?repo=owner/repo" | \
-     jq '.data.promptsPerDay.averagePerDay'
+     jq '.data.dailyStats.promptsAverage'
+   
+   # Get commits average per day
+   curl -s "https://stats.specstory.com/analyze?repo=owner/repo" | \
+     jq '.data.dailyStats.commitsAverage'
    ```
 
 4. **Get Date Range of Activity:**
    ```bash
    curl -s "https://stats.specstory.com/analyze?repo=owner/repo" | \
-     jq '.data.promptsPerDay.dateRange'
+     jq '.data.dailyStats.dateRange'
    ```
 
 5. **List Daily Activity:**
    ```bash
    curl -s "https://stats.specstory.com/analyze?repo=owner/repo" | \
-     jq '.data.promptsPerDay.dailyDetails[] | "\(.date): \(.promptCount) prompts"'
+     jq '.data.dailyStats.dailyDetails[] | "\(.date): \(.promptCount) prompts, \(.commitCount) commits"'
    ```
 
 **Features:**
+- Works with any public GitHub repository (with or without .specstory/history)
 - Automatically detects and uses repository's default branch when not specified
-- Uses blobless Git clones (only downloads tree structure, ~3MB)
+- Uses blobless Git clones (downloads commit history but no file content)
 - No API rate limits
 - Content-addressable caching using blob SHAs
 - Intelligent date extraction from markdown headers

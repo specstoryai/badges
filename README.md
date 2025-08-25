@@ -35,6 +35,11 @@ cd badges
 # Install dependencies
 npm install
 
+# (Optional) Configure for local development
+# Copy the example environment file
+cp .env.local.example .env.local
+# Edit .env.local to point to your local stats server if needed
+
 # Start development server
 npm run dev --turbopack
 ```
@@ -191,6 +196,28 @@ Add these badges to your README:
 
 The badges use the [SpecStory Stats API](https://stats.specstory.com) to fetch repository data. The API analyzes `.specstory/history` directories in GitHub repositories containing AI coding session logs.
 
+### Local Development
+
+For local development, you can configure the badges to use a local stats server:
+
+1. Create a `.env.local` file (or copy from `.env.local.example`):
+```bash
+cp .env.local.example .env.local
+```
+
+2. Set the stats API URL in `.env.local`:
+```env
+# For local development
+NEXT_PUBLIC_STATS_API_URL=http://localhost:3010
+
+# For production (default if not set)
+# NEXT_PUBLIC_STATS_API_URL=https://stats.specstory.com
+```
+
+3. Start your local stats server on port 3010 (or configure to your preferred port)
+
+4. The badges will now fetch data from your local stats server
+
 ### Customization
 
 To modify the visual style, edit the Rough.js parameters in the route files:
@@ -268,11 +295,14 @@ badges/
 │   │       └── page.tsx                      # Dynamic repo page
 │   ├── page.tsx                              # Homepage (redirects)
 │   ├── layout.tsx                            # Root layout
+│   ├── icon.svg                              # Favicon
 │   └── globals.css                           # Global styles
 ├── lib/
+│   ├── config.ts                             # Configuration utilities
 │   └── utils.ts                              # Utility functions
 ├── public/
 │   └── SpecStory-logo.svg                    # SpecStory logo
+├── .env.local.example                        # Environment variables template
 ├── .eslintrc.json                            # ESLint configuration
 ├── package.json                              # Dependencies
 ├── tsconfig.json                             # TypeScript config

@@ -1,6 +1,7 @@
 import rough from 'roughjs/bundled/rough.cjs';
 import { JSDOM } from 'jsdom';
 import { NextResponse } from 'next/server';
+import { getStatsApiUrl } from '@/lib/config';
 
 export async function GET(
   request: Request,
@@ -12,7 +13,7 @@ export async function GET(
   const showZeroDays = searchParams.get('showZeroDays') === 'true';
   
   try {
-    const url = `https://stats.specstory.com/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
+    const url = `${getStatsApiUrl()}/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
     const res = await fetch(url);
     
     if (!res.ok) {
