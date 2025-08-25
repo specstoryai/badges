@@ -78,7 +78,7 @@ export async function GET(
     svg.appendChild(titleText);
 
     const stats = data.data;
-    const promptsPerDay = stats.promptsPerDay || {};
+    const dailyStats = stats.dailyStats || {};
     
     const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     totalText.setAttribute('x', '80');
@@ -109,8 +109,8 @@ export async function GET(
     avgText.setAttribute('font-size', '24');
     avgText.setAttribute('font-weight', 'bold');
     avgText.setAttribute('fill', '#2563eb');
-    avgText.textContent = promptsPerDay.averagePerDay ? 
-      promptsPerDay.averagePerDay.toFixed(1) : '0';
+    avgText.textContent = dailyStats.promptsAverage ? 
+      dailyStats.promptsAverage.toFixed(1) : '0';
     svg.appendChild(avgText);
     
     const avgLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -166,8 +166,8 @@ export async function GET(
     dateText.setAttribute('font-size', '9');
     dateText.setAttribute('fill', '#92400e');
     dateText.setAttribute('opacity', '0.7');
-    if (promptsPerDay.dateRange) {
-      dateText.textContent = `${promptsPerDay.dateRange.start} to ${promptsPerDay.dateRange.end}`;
+    if (dailyStats.dateRange) {
+      dateText.textContent = `${dailyStats.dateRange.start} to ${dailyStats.dateRange.end}`;
     } else {
       dateText.textContent = 'No date data available';
     }
