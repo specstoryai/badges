@@ -11,17 +11,34 @@ export async function GET(
   const { searchParams } = new URL(request.url);
   const branch = searchParams.get('branch');
   
+  console.log('[summary.svg] Request for:', { owner, name, branch });
+  
   try {
     const url = `${getStatsApiUrl()}/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
+    console.log('[summary.svg] Fetching from:', url);
+    
     const res = await fetch(url);
+    console.log('[summary.svg] Response status:', res.status);
     
     if (!res.ok) {
       throw new Error(`API returned ${res.status}`);
     }
     
     const data = await res.json();
+    console.log('[summary.svg] API response:', {
+      success: data.success,
+      hasData: !!data.data,
+      promptCount: data.data?.promptCount,
+      sessionsProcessed: data.data?.sessionsProcessed,
+      totalCommits: data.data?.totalCommits,
+      hasDailyStats: !!data.data?.dailyStats,
+      dailyStatsKeys: data.data?.dailyStats ? Object.keys(data.data.dailyStats) : [],
+      promptsAverage: data.data?.dailyStats?.promptsAverage,
+      dateRange: data.data?.dailyStats?.dateRange
+    });
     
     if (!data.success || !data.data) {
+      console.error('[summary.svg] Invalid data. Full response:', JSON.stringify(data, null, 2));
       throw new Error('Invalid data structure');
     }
 
@@ -44,12 +61,12 @@ export async function GET(
     
     const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     stop1.setAttribute('offset', '0%');
-    stop1.setAttribute('style', 'stop-color:#fef3c7;stop-opacity:1');
+    stop1.setAttribute('style', 'stop-color:#e0f7fa;stop-opacity:1');
     gradient.appendChild(stop1);
     
     const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     stop2.setAttribute('offset', '100%');
-    stop2.setAttribute('style', 'stop-color:#fde68a;stop-opacity:1');
+    stop2.setAttribute('style', 'stop-color:#fff8e1;stop-opacity:1');
     gradient.appendChild(stop2);
     
     defs.appendChild(gradient);
@@ -60,7 +77,7 @@ export async function GET(
     svg.appendChild(rc.rectangle(5, 5, 390, 110, {
       fill: 'url(#bg-gradient)',
       fillStyle: 'solid',
-      stroke: '#92400e',
+      stroke: '#0097a7',
       strokeWidth: 2,
       roughness: 1.5,
       bowing: 2
@@ -73,12 +90,19 @@ export async function GET(
     titleText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     titleText.setAttribute('font-size', '16');
     titleText.setAttribute('font-weight', 'bold');
-    titleText.setAttribute('fill', '#78350f');
+    titleText.setAttribute('fill', '#00363a');
     titleText.textContent = `${owner}/${name}`;
     svg.appendChild(titleText);
 
     const stats = data.data;
     const dailyStats = stats.dailyStats || {};
+    
+    console.log('[summary.svg] Processing stats:', {
+      promptCount: stats.promptCount,
+      sessionsProcessed: stats.sessionsProcessed,
+      promptsAverage: dailyStats.promptsAverage,
+      dateRange: dailyStats.dateRange
+    });
     
     const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     totalText.setAttribute('x', '80');
@@ -87,7 +111,7 @@ export async function GET(
     totalText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     totalText.setAttribute('font-size', '24');
     totalText.setAttribute('font-weight', 'bold');
-    totalText.setAttribute('fill', '#dc2626');
+    totalText.setAttribute('fill', '#d84315');
     totalText.textContent = String(stats.promptCount);
     svg.appendChild(totalText);
     
@@ -97,7 +121,7 @@ export async function GET(
     totalLabel.setAttribute('text-anchor', 'middle');
     totalLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     totalLabel.setAttribute('font-size', '11');
-    totalLabel.setAttribute('fill', '#78350f');
+    totalLabel.setAttribute('fill', '#00363a');
     totalLabel.textContent = 'Total Prompts';
     svg.appendChild(totalLabel);
 
@@ -108,7 +132,7 @@ export async function GET(
     avgText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     avgText.setAttribute('font-size', '24');
     avgText.setAttribute('font-weight', 'bold');
-    avgText.setAttribute('fill', '#2563eb');
+    avgText.setAttribute('fill', '#0097a7');
     avgText.textContent = dailyStats.promptsAverage ? 
       dailyStats.promptsAverage.toFixed(1) : '0';
     svg.appendChild(avgText);
@@ -119,7 +143,7 @@ export async function GET(
     avgLabel.setAttribute('text-anchor', 'middle');
     avgLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     avgLabel.setAttribute('font-size', '11');
-    avgLabel.setAttribute('fill', '#78350f');
+    avgLabel.setAttribute('fill', '#00363a');
     avgLabel.textContent = 'Avg/Day';
     svg.appendChild(avgLabel);
 
@@ -130,7 +154,7 @@ export async function GET(
     filesText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     filesText.setAttribute('font-size', '24');
     filesText.setAttribute('font-weight', 'bold');
-    filesText.setAttribute('fill', '#059669');
+    filesText.setAttribute('fill', '#f57c00');
     filesText.textContent = String(stats.sessionsProcessed);
     svg.appendChild(filesText);
     
@@ -140,21 +164,21 @@ export async function GET(
     filesLabel.setAttribute('text-anchor', 'middle');
     filesLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     filesLabel.setAttribute('font-size', '11');
-    filesLabel.setAttribute('fill', '#78350f');
+    filesLabel.setAttribute('fill', '#00363a');
     filesLabel.textContent = 'Sessions';
     svg.appendChild(filesLabel);
 
     svg.appendChild(rc.line(140, 50, 140, 90, {
       roughness: 1.5,
       strokeWidth: 1,
-      stroke: '#92400e',
+      stroke: '#4db6ac',
       strokeLineDash: [5, 5]
     }) as any);
 
     svg.appendChild(rc.line(260, 50, 260, 90, {
       roughness: 1.5,
       strokeWidth: 1,
-      stroke: '#92400e',
+      stroke: '#4db6ac',
       strokeLineDash: [5, 5]
     }) as any);
 
@@ -164,7 +188,7 @@ export async function GET(
     dateText.setAttribute('text-anchor', 'middle');
     dateText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     dateText.setAttribute('font-size', '9');
-    dateText.setAttribute('fill', '#92400e');
+    dateText.setAttribute('fill', '#00363a');
     dateText.setAttribute('opacity', '0.7');
     if (dailyStats.dateRange) {
       dateText.textContent = `${dailyStats.dateRange.start} to ${dailyStats.dateRange.end}`;
@@ -193,6 +217,7 @@ export async function GET(
     
     svg.appendChild(logoGroup);
 
+    console.log('[summary.svg] Successfully generated SVG');
     return new Response(svg.outerHTML, {
       headers: {
         'Content-Type': 'image/svg+xml',
@@ -200,6 +225,7 @@ export async function GET(
       },
     });
   } catch (error) {
+    console.error('[summary.svg] Error:', error);
     const errorSvg = `
       <svg width="400" height="120" xmlns="http://www.w3.org/2000/svg">
         <rect width="400" height="120" fill="#fef3c7"/>
