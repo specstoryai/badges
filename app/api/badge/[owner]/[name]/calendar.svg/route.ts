@@ -22,7 +22,7 @@ export async function GET(
     
     const data = await res.json();
     
-    if (!data.success || !data.data?.promptsPerDay?.dailyDetails) {
+    if (!data.success || !data.data?.dailyStats?.dailyDetails) {
       throw new Error('Invalid data structure');
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     const rc = rough.svg(svg as any);
 
     // Process daily data into a map
-    const dailyData = data.data.promptsPerDay.dailyDetails;
+    const dailyData = data.data.dailyStats.dailyDetails;
     const promptsByDate = new Map<string, number>(dailyData.map((d: any) => [d.date, d.promptCount]));
 
     // Determine which month to show

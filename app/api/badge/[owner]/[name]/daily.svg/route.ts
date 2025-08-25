@@ -12,18 +12,40 @@ export async function GET(
   const branch = searchParams.get('branch');
   const showZeroDays = searchParams.get('showZeroDays') === 'true';
   
+  console.log('[daily.svg] Request for:', { owner, name, showZeroDays, branch });
+  
   try {
     const url = `${getStatsApiUrl()}/analyze?repo=${owner}/${name}${branch ? `&branch=${branch}` : ''}`;
+    console.log('[daily.svg] Fetching from:', url);
+    
     const res = await fetch(url);
+    console.log('[daily.svg] Response status:', res.status);
     
     if (!res.ok) {
-      throw new Error(`API returned ${res.status}`);
+      const errorText = await res.text();
+      console.error('[daily.svg] API error response:', errorText);
+      throw new Error(`API returned ${res.status}: ${errorText}`);
     }
     
     const data = await res.json();
+    console.log('[daily.svg] API response structure:', {
+      success: data.success,
+      hasData: !!data.data,
+      hasDailyStats: !!data.data?.dailyStats,
+      hasDailyDetails: !!data.data?.dailyStats?.dailyDetails,
+      dailyDetailsCount: data.data?.dailyStats?.dailyDetails?.length || 0,
+      // Also log if old structure exists
+      hasOldPromptsPerDay: !!data.data?.promptsPerDay
+    });
     
-    if (!data.success || !data.data?.promptsPerDay?.dailyDetails) {
-      throw new Error('Invalid data structure');
+    if (!data.success) {
+      console.error('[daily.svg] API returned success: false', data.error);
+      throw new Error(`API error: ${data.error || 'Unknown error'}`);
+    }
+    
+    if (!data.data?.dailyStats?.dailyDetails) {
+      console.error('[daily.svg] Invalid data structure. Full response:', JSON.stringify(data, null, 2));
+      throw new Error('Invalid data structure - missing dailyStats.dailyDetails');
     }
 
     const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
@@ -51,7 +73,12 @@ export async function GET(
       stroke: '#525252'
     }) as any);
 
-    const rawDailyData = data.data.promptsPerDay.dailyDetails;
+    const rawDailyData = data.data.dailyStats.dailyDetails;
+    console.log('[daily.svg] Processing daily data:', {
+      rawDataCount: rawDailyData.length,
+      firstDay: rawDailyData[0],
+      lastDay: rawDailyData[rawDailyData.length - 1]
+    });
     
     // Fill in missing days with 0 prompts only if showZeroDays is true
     const fillMissingDays = (data: any[]) => {
@@ -71,7 +98,7 @@ export async function GET(
           result.push({
             date: dateStr,
             promptCount: 0,
-            fileCount: 0
+            sessionCount: 0
           });
         }
       }
@@ -147,7 +174,7 @@ export async function GET(
     avgText.setAttribute('font-size', '13');
     avgText.setAttribute('fill', '#6366f1');
     avgText.setAttribute('font-weight', 'bold');
-    avgText.textContent = `${data.data.promptsPerDay.averagePerDay.toFixed(1)}/day`;
+    avgText.textContent = `${data.data.dailyStats.promptsAverage.toFixed(1)}/day`;
     svg.appendChild(avgText);
 
     // Add SpecStory logo and text in bottom right on same line

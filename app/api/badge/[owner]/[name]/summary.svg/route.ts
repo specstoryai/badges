@@ -131,7 +131,7 @@ export async function GET(
     filesText.setAttribute('font-size', '24');
     filesText.setAttribute('font-weight', 'bold');
     filesText.setAttribute('fill', '#059669');
-    filesText.textContent = String(stats.filesProcessed);
+    filesText.textContent = String(stats.sessionsProcessed);
     svg.appendChild(filesText);
     
     const filesLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');

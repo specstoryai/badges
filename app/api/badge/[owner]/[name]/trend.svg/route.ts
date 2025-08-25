@@ -22,7 +22,7 @@ export async function GET(
     
     const data = await res.json();
     
-    if (!data.success || !data.data?.promptsPerDay?.dailyDetails) {
+    if (!data.success || !data.data?.dailyStats?.dailyDetails) {
       throw new Error('Invalid data structure');
     }
 
@@ -53,7 +53,7 @@ export async function GET(
       bowing: 0.5
     }) as any);
 
-    const rawDailyData = data.data.promptsPerDay.dailyDetails;
+    const rawDailyData = data.data.dailyStats.dailyDetails;
     
     // Fill in missing days with 0 prompts only if showZeroDays is true
     const fillMissingDays = (data: any[]) => {
@@ -73,7 +73,7 @@ export async function GET(
           result.push({
             date: dateStr,
             promptCount: 0,
-            fileCount: 0
+            sessionCount: 0
           });
         }
       }
@@ -150,7 +150,7 @@ export async function GET(
     title.textContent = `Prompt Trend - ${owner}/${name}`;
     svg.appendChild(title);
 
-    const trendArrow = data.data.promptsPerDay.dailyDetails.length > 1 && 
+    const trendArrow = data.data.dailyStats.dailyDetails.length > 1 && 
       dailyData[dailyData.length - 1].promptCount > dailyData[0].promptCount ? '↗' : '↘';
     const trendColor = trendArrow === '↗' ? '#10b981' : '#ef4444';
     
