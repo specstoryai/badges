@@ -13,6 +13,7 @@ export default function RepoPage({
   const [mounted, setMounted] = useState(false);
   const [branchInput, setBranchInput] = useState('');
   const [monthInput, setMonthInput] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -49,14 +50,8 @@ export default function RepoPage({
   const getDemoUrl = (type: string) => {
     if (!repoParams) return '';
     
-    // Build URL without using window.location to avoid SSR issues
-    const baseUrl = mounted && typeof window !== 'undefined' 
-      ? window.location.origin 
-      : '';
-      
-    if (!baseUrl) return '';
-    
-    let url = `${baseUrl}/api/badge/${repoParams.owner}/${repoParams.repo}/${type}.svg`;
+    // Use relative URL to avoid SSR issues
+    let url = `/api/badge/${repoParams.owner}/${repoParams.repo}/${type}.svg`;
     
     const params = new URLSearchParams();
     
@@ -69,6 +64,11 @@ export default function RepoPage({
     }
     if ((type === 'daily' || type === 'trend') && showZeroDays) {
       params.append('showZeroDays', 'true');
+    }
+    
+    // Add refresh key to force reload
+    if (refreshKey > 0) {
+      params.append('t', String(refreshKey));
     }
     
     const queryString = params.toString();
@@ -185,7 +185,10 @@ export default function RepoPage({
                 src={getDemoUrl(type)}
                 alt={config.alt}
                 className={imgClass}
-                key={`${type}-${repo}-${branch}-${month}-${showZeroDays}`}
+                key={`${type}-${repoParams?.owner}-${repoParams?.repo}-${branch}-${month}-${showZeroDays}`}
+                onError={(e) => {
+                  console.error(`Failed to load ${type} badge for ${repoParams?.owner}/${repoParams?.repo}`);
+                }}
               />
             </a>
           )}
@@ -265,6 +268,13 @@ export default function RepoPage({
               >
                 <span className="md:hidden">View</span>
                 <span className="hidden md:inline">View Stats</span>
+              </button>
+              <button
+                onClick={() => setRefreshKey(Date.now())}
+                className="px-3 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
+                title="Refresh badges"
+              >
+                🔄
               </button>
             </div>
           </div>

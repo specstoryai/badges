@@ -39,9 +39,15 @@ export async function GET(
 
     const rc = rough.svg(svg as any);
 
-    // Process daily data into a map
+    // Process daily data into maps
     const dailyData = data.data.dailyStats.dailyDetails;
-    const promptsByDate = new Map<string, number>(dailyData.map((d: any) => [d.date, d.promptCount]));
+    const promptsByDate = new Map<string, number>();
+    const commitsByDate = new Map<string, number>();
+    
+    dailyData.forEach((d: any) => {
+      promptsByDate.set(d.date, d.promptCount || 0);
+      commitsByDate.set(d.date, d.commitCount || 0);
+    });
 
     // Determine which month to show
     let targetMonth: Date;
@@ -111,7 +117,8 @@ export async function GET(
       
       const dateStr = `${year}-${String(monthNum + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const promptCount = promptsByDate.get(dateStr) || 0;
-      const hasActivity = promptCount > 0;
+      const commitCount = commitsByDate.get(dateStr) || 0;
+      const hasActivity = promptCount > 0 || commitCount > 0;
 
       // Draw cell background
       if (hasActivity) {
@@ -150,24 +157,40 @@ export async function GET(
 
       if (hasActivity) {
         // Position checkmark with longer right upward stroke
-        const checkPath = rc.path(`M ${x + 20} ${y + 30} L ${x + 30} ${y + 40} L ${x + 50} ${y + 20}`, {
+        const checkPath = rc.path(`M ${x + 15} ${y + 25} L ${x + 25} ${y + 35} L ${x + 45} ${y + 15}`, {
           stroke: '#22c55e',
           strokeWidth: 3,
           roughness: 1.5
         });
         svg.appendChild(checkPath as any);
 
-        // Prompt count - make it prominent
-        const countText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        countText.setAttribute('x', String(x + cellWidth - 5));
-        countText.setAttribute('y', String(y + cellHeight - 5));
-        countText.setAttribute('text-anchor', 'end');
-        countText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-        countText.setAttribute('font-size', '20');
-        countText.setAttribute('font-weight', 'bold');
-        countText.setAttribute('fill', '#059669');
-        countText.textContent = String(promptCount);
-        svg.appendChild(countText);
+        // Prompt count - top right
+        if (promptCount > 0) {
+          const promptText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          promptText.setAttribute('x', String(x + cellWidth - 5));
+          promptText.setAttribute('y', String(y + 35));
+          promptText.setAttribute('text-anchor', 'end');
+          promptText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+          promptText.setAttribute('font-size', '16');
+          promptText.setAttribute('font-weight', 'bold');
+          promptText.setAttribute('fill', '#0097a7');
+          promptText.textContent = String(promptCount);
+          svg.appendChild(promptText);
+        }
+
+        // Commit count - bottom right
+        if (commitCount > 0) {
+          const commitText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          commitText.setAttribute('x', String(x + cellWidth - 5));
+          commitText.setAttribute('y', String(y + cellHeight - 5));
+          commitText.setAttribute('text-anchor', 'end');
+          commitText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+          commitText.setAttribute('font-size', '14');
+          commitText.setAttribute('font-weight', 'bold');
+          commitText.setAttribute('fill', '#f57c00');
+          commitText.textContent = String(commitCount);
+          svg.appendChild(commitText);
+        }
       } else {
         // Red X for inactive days
         const xPath1 = rc.line(x + 30, y + 25, x + 50, y + 45, {
@@ -204,7 +227,7 @@ export async function GET(
     activeLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     activeLabel.setAttribute('font-size', '12');
     activeLabel.setAttribute('fill', '#525252');
-    activeLabel.textContent = 'Days with prompts';
+    activeLabel.textContent = 'Days with activity';
     svg.appendChild(activeLabel);
 
     // Inactive day legend
@@ -224,6 +247,27 @@ export async function GET(
     inactiveLabel.setAttribute('fill', '#525252');
     inactiveLabel.textContent = 'No activity';
     svg.appendChild(inactiveLabel);
+    
+    // Color key for numbers
+    const promptKeyText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    promptKeyText.setAttribute('x', '350');
+    promptKeyText.setAttribute('y', String(legendY + 5));
+    promptKeyText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    promptKeyText.setAttribute('font-size', '11');
+    promptKeyText.setAttribute('fill', '#0097a7');
+    promptKeyText.setAttribute('font-weight', 'bold');
+    promptKeyText.textContent = 'Prompts';
+    svg.appendChild(promptKeyText);
+    
+    const commitKeyText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    commitKeyText.setAttribute('x', '350');
+    commitKeyText.setAttribute('y', String(legendY + 20));
+    commitKeyText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    commitKeyText.setAttribute('font-size', '11');
+    commitKeyText.setAttribute('fill', '#f57c00');
+    commitKeyText.setAttribute('font-weight', 'bold');
+    commitKeyText.textContent = 'Commits';
+    svg.appendChild(commitKeyText);
 
     // Add SpecStory logo and text in bottom right on same line
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
