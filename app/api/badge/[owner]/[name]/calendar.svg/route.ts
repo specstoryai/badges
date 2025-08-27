@@ -29,16 +29,6 @@ export async function GET(
     const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
     global.document = dom.window.document as any;
 
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '700');
-    svg.setAttribute('height', '520');
-    svg.setAttribute('viewBox', '0 0 700 520');
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    
-    svg.style.backgroundColor = '#fffef8';
-
-    const rc = rough.svg(svg as any);
-
     // Process daily data into maps
     const dailyData = data.data.dailyStats.dailyDetails;
     const promptsByDate = new Map<string, number>();
@@ -71,6 +61,26 @@ export async function GET(
     const lastDay = new Date(year, monthNum + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startWeekday = firstDay.getDay();
+    
+    // Calculate number of weeks needed
+    const weeksNeeded = Math.ceil((startWeekday + daysInMonth) / 7);
+    
+    // Calculate SVG height based on number of weeks
+    const baseHeight = 90; // Top area for title and day headers
+    const weekHeight = 70;
+    const legendHeight = 60;
+    const svgHeight = baseHeight + (weeksNeeded * weekHeight) + legendHeight;
+    
+    // Create SVG with dynamic height
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '700');
+    svg.setAttribute('height', String(svgHeight));
+    svg.setAttribute('viewBox', `0 0 700 ${svgHeight}`);
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    
+    svg.style.backgroundColor = '#fffef8';
+
+    const rc = rough.svg(svg as any);
 
     // Title
     const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -210,7 +220,7 @@ export async function GET(
     }
 
     // Legend - positioned on the left
-    const legendY = startY + Math.ceil((startWeekday + daysInMonth) / 7) * 70 + 20;
+    const legendY = startY + (weeksNeeded * 70) + 20;
     
     // Active day legend
     svg.appendChild(rc.rectangle(40, legendY, 20, 20, {
@@ -309,9 +319,9 @@ export async function GET(
     });
   } catch (error) {
     const errorSvg = `
-      <svg width="700" height="520" xmlns="http://www.w3.org/2000/svg">
-        <rect width="700" height="520" fill="#fffef8"/>
-        <text x="350" y="260" text-anchor="middle" font-family="system-ui" font-size="14" fill="#dc2626">
+      <svg width="700" height="460" xmlns="http://www.w3.org/2000/svg">
+        <rect width="700" height="460" fill="#fffef8"/>
+        <text x="350" y="230" text-anchor="middle" font-family="system-ui" font-size="14" fill="#dc2626">
           Failed to load calendar for ${owner}/${name}
         </text>
       </svg>
