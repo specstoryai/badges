@@ -5,7 +5,7 @@ Beautiful, hand-drawn style SVG badges for visualizing AI-assisted development a
 ## ✨ Features
 
 - 🎨 **Hand-drawn style** using Rough.js for authentic sketchy appearance
-- 📈 **Four badge types**: Calendar, daily charts, trend lines, and summary badges
+- 📈 **Three badge types**: Calendar, daily charts, and summary badges
 - 🔄 **Real-time data** from GitHub repositories via the SpecStory Stats API
 - ⚡ **Smart caching** with 1-hour TTL for optimal performance
 - 🌿 **Branch support** for analyzing different branches
@@ -36,9 +36,8 @@ cd badges
 npm install
 
 # (Optional) Configure for local development
-# Copy the example environment file
-cp .env.local.example .env.local
-# Edit .env.local to point to your local stats server if needed
+# Create a .env.local file by copying .env.local.example and setting NEXT_PUBLIC_STATS_API_URL 
+# if you want to point to a local stats server (see Local Development below)
 
 # Start development server
 npm run dev --turbopack
@@ -65,7 +64,7 @@ Example:
 ```
 
 ### 2. Daily Activity Chart
-Shows daily prompt counts as a hand-drawn bar chart with intelligent date labeling.
+Shows daily prompts and commits as a hand-drawn dual bar chart with independent left/right axes, plus intelligent date labeling that adapts to data density.
 
 ```markdown
 ![Daily Activity](https://badges.specstory.com/api/badge/owner/repo/daily.svg)
@@ -80,19 +79,8 @@ Example:
 ![Daily Activity](https://badges.specstory.com/api/badge/owner/repo/daily.svg?showZeroDays=true&branch=develop)
 ```
 
-### 3. Trend Line
-Displays activity trend over time with a sketchy line chart and data points.
-
-```markdown
-![Trend](https://badges.specstory.com/api/badge/owner/repo/trend.svg)
-```
-
-**Query Parameters:**
-- `showZeroDays`: Set to `true` to show zero-activity days as gray dots
-- `branch`: Git branch to analyze
-
-### 4. Summary Badge
-Compact badge showing total prompts, daily average, and file count.
+### 3. Summary Badge
+Compact badge showing total prompts, daily average, and sessions processed.
 
 ```markdown
 ![Summary](https://badges.specstory.com/api/badge/owner/repo/summary.svg)
@@ -117,7 +105,7 @@ The application includes an interactive demo page at `/{owner}/{repo}` that allo
 
 Navigate to `/{owner}/{repo}` with these optional parameters:
 
-- `primary`: Choose main badge (`calendar`, `daily`, `trend`, `summary`)
+- `primary`: Choose main badge (`calendar`, `daily`, `summary`)
 - `month`: Calendar month (YYYY-MM format)
 - `showZeroDays`: Include zero-activity days (`true`/`false`)
 - `branch`: Git branch name
@@ -137,8 +125,9 @@ Example URLs:
 - **Calendar view** with:
   - Green backgrounds and checkmarks for active days
   - Gray backgrounds and red X's for inactive days
-  - Day numbers and prompt counts
+  - Day numbers plus prompt and commit counts
   - Month/year title with repository name
+  - Dynamic height adjustment for months requiring 6 weeks
 - **Smart date labeling** that adapts to data density:
   - All dates shown for ≤7 days
   - Progressive reduction for larger datasets
@@ -155,7 +144,7 @@ All endpoints follow the pattern:
 Where:
 - `[owner]`: GitHub username or organization
 - `[name]`: Repository name
-- `[type]`: Badge type (`calendar`, `daily`, `trend`, `summary`)
+- `[type]`: Badge type (`calendar`, `daily`, `summary`)
 
 ### Response Headers
 - `Content-Type: image/svg+xml`
@@ -174,10 +163,7 @@ Add these badges to your README:
 ![Activity Calendar](https://badges.specstory.com/api/badge/owner/repo/calendar.svg)
 
 <!-- Daily activity with hand-drawn bars -->
-![Daily Prompts](https://badges.specstory.com/api/badge/owner/repo/daily.svg)
-
-<!-- Trend line showing progress -->
-![Trend](https://badges.specstory.com/api/badge/owner/repo/trend.svg)
+![Daily Activity](https://badges.specstory.com/api/badge/owner/repo/daily.svg)
 
 <!-- Quick stats summary -->
 ![Summary](https://badges.specstory.com/api/badge/owner/repo/summary.svg)
@@ -189,7 +175,7 @@ Add these badges to your README:
 ![Feature Branch](https://badges.specstory.com/api/badge/owner/repo/daily.svg?branch=feature-xyz)
 
 <!-- Show gaps in activity -->
-![With Zero Days](https://badges.specstory.com/api/badge/owner/repo/trend.svg?showZeroDays=true)
+![With Zero Days](https://badges.specstory.com/api/badge/owner/repo/daily.svg?showZeroDays=true)
 ```
 
 ## 🔧 Configuration
@@ -200,12 +186,12 @@ The badges use the [SpecStory Stats API](https://stats.specstory.com) to fetch r
 
 For local development, you can configure the badges to use a local stats server:
 
-1. Create a `.env.local` file (or copy from `.env.local.example`):
+1. Copy the example environment file and adjust as needed:
 ```bash
 cp .env.local.example .env.local
 ```
 
-2. Set the stats API URL in `.env.local`:
+2. The example file contains:
 ```env
 # For local development
 NEXT_PUBLIC_STATS_API_URL=http://localhost:3010
@@ -306,7 +292,6 @@ badges/
 ├── .eslintrc.json                            # ESLint configuration
 ├── package.json                              # Dependencies
 ├── tsconfig.json                             # TypeScript config
-├── tailwind.config.ts                        # Tailwind configuration
 ├── API_README.md                              # Stats API documentation
 └── README.md                                  # This file
 ```
