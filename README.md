@@ -19,38 +19,38 @@ Visit [https://badges.specstory.com](https://badges.specstory.com) to see the ba
 
 ## 🚀 Getting Started
 
-### Prerequisites
+Use the hosted service at `https://badges.specstory.com` — no install required.
 
-- Node.js 18+ 
-- npm or yarn
-- A GitHub repository with `.specstory/history` directory containing AI session logs
+### Quick start
 
-### Installation
+1. Use any public GitHub repo — badges render from commit history by default. To highlight AI coding activity, optionally include SpecStory session logs in `.specstory/history/` (see [docs](https://docs.specstory.com/specstory/features)).
+2. Copy these Markdown snippets and replace `OWNER/REPO` with your repository
 
-```bash
-# Clone the repository
-git clone https://github.com/specstoryai/badges.git
-cd badges
-
-# Install dependencies
-npm install
-
-# (Optional) Configure for local development
-# Create a .env.local file by copying .env.local.example and setting NEXT_PUBLIC_STATS_API_URL 
-# if you want to point to a local stats server (see Local Development below)
-
-# Start development server
-npm run dev --turbopack
+```markdown
+[![Activity Calendar](https://badges.specstory.com/api/badge/OWNER/REPO/calendar.svg)](https://badges.specstory.com/OWNER/REPO?primary=calendar)
+[![Daily Activity](https://badges.specstory.com/api/badge/OWNER/REPO/daily.svg)](https://badges.specstory.com/OWNER/REPO?primary=daily)
+[![Summary](https://badges.specstory.com/api/badge/OWNER/REPO/summary.svg)](https://badges.specstory.com/OWNER/REPO?primary=summary)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the application.
+Example for this repo:
+
+```markdown
+[![Activity Calendar](https://badges.specstory.com/api/badge/specstoryai/badges/calendar.svg)](https://badges.specstory.com/specstoryai/badges?primary=calendar)
+[![Daily Activity](https://badges.specstory.com/api/badge/specstoryai/badges/daily.svg)](https://badges.specstory.com/specstoryai/badges?primary=daily)
+[![Summary](https://badges.specstory.com/api/badge/specstoryai/badges/summary.svg)](https://badges.specstory.com/specstoryai/badges?primary=summary)
+```
+
+Optional query params (append to image URL):
+- `month=YYYY-MM` for calendar
+- `showZeroDays=true` for daily
+- `branch=your-branch` for any badge
 
 ## 📊 Badge Types
 
 ### 1. Activity Calendar
 Monthly calendar view showing daily AI coding activity with green checkmarks for active days and red X's for inactive days.
 
-![Activity Calendar preview](public/calendar.png)
+[![Activity Calendar](https://badges.specstory.com/api/badge/specstoryai/badges/calendar.svg)](https://badges.specstory.com/specstoryai/badges?primary=calendar)
 
 ```markdown
 ![Activity Calendar](https://badges.specstory.com/api/badge/owner/repo/calendar.svg)
@@ -68,7 +68,7 @@ Example:
 ### 2. Daily Activity Chart
 Shows daily prompts and commits as a hand-drawn dual bar chart with independent left/right axes, plus intelligent date labeling that adapts to data density.
 
-![Daily Activity preview](public/daily.png)
+[![Daily Activity](https://badges.specstory.com/api/badge/specstoryai/badges/daily.svg)](https://badges.specstory.com/specstoryai/badges?primary=daily)
 
 ```markdown
 ![Daily Activity](https://badges.specstory.com/api/badge/owner/repo/daily.svg)
@@ -86,7 +86,7 @@ Example:
 ### 3. Summary Badge
 Compact badge showing total prompts, daily average, and sessions processed.
 
-![Summary preview](public/summary.png)
+[![Summary](https://badges.specstory.com/api/badge/specstoryai/badges/summary.svg)](https://badges.specstory.com/specstoryai/badges?primary=summary)
 
 ```markdown
 ![Summary](https://badges.specstory.com/api/badge/owner/repo/summary.svg)

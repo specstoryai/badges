@@ -373,3 +373,95 @@ These are placed directly beneath each section’s description in `README.md`.
 
 ---
 
+_**User**_
+
+I realize we should be using live badges in the README, not screenshots. replace these with the live badge images for this repo. They should look like this:
+![Activity Calendar](https://badges.specstory.com/api/badge/owner/repo/calendar.svg)
+
+but make these images hyperlinks that go to for example https://badges.specstory.com/specstoryai/badges?primary=calendar 
+
+or https://badges.specstory.com/specstoryai/badges?primary=daily
+
+or https://badges.specstory.com/specstoryai/badges?primary=summary  
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Updating README.md**
+
+I need to modify the README.md file by replacing the inserted screenshots with live badges and turning them into hyperlinks that point to the demo pages for this repository. The images should use the live URLs corresponding to specifications for specstoryai/badges. I should wrap these in links to a specific badges page. Additionally, I'll keep existing code blocks that show sample markdown, but I'll remove the old image lines and replace them with linked images, ensuring correct formatting throughout. I'll check for any other images that might need updating, too.
+**Modifying README.md Images**
+
+I need to check the README to find the lines where I've added the image previews. Specifically, I see the Activity Calendar, Daily Activity, and Summary previews listed. I'll replace each of these with the corresponding linked badge. To proceed, I'll implement the `apply_patch` and provide a concise status update saying, "I'll swap screenshots for live linked badges." Then I’ll run the patch while ensuring there’s no extra indentation. Finally, I'll summarize the changes once everything is done.</details></think>
+
+---
+
+I'll replace the screenshot images in the README with live, linked badge images for this repo (calendar, daily, summary).
+
+---
+
+
+
+---
+
+Replaced screenshots with live, linked badges in README:
+
+- Activity Calendar:
+  - Image: https://badges.specstory.com/api/badge/specstoryai/badges/calendar.svg
+  - Link: https://badges.specstory.com/specstoryai/badges?primary=calendar
+- Daily Activity:
+  - Image: https://badges.specstory.com/api/badge/specstoryai/badges/daily.svg
+  - Link: https://badges.specstory.com/specstoryai/badges?primary=daily
+- Summary:
+  - Image: https://badges.specstory.com/api/badge/specstoryai/badges/summary.svg
+  - Link: https://badges.specstory.com/specstoryai/badges?primary=summary
+
+These are placed under each badge section in `README.md`.
+
+---
+
+_**User**_
+
+Good. And the Getting Started section should be about using the live badges.specstory.com service and not about installing and running the dev server locally. Save that for the local development and deployment type sections at the bottom of the document 
+
+---
+
+_**Assistant**_
+
+<think><details><summary>Thought Process</summary>**Updating README instructions**
+
+I need to revise the "Getting Started" section of the README to emphasize using the live service instead of local development. Right now, it has prerequisites and installation steps like cloning the repo and running npm install. I’ll provide simpler steps to embed badges using URLs for the repository and include examples with parameters. We can move local development instructions further down under "Configuration" and rename "Installation" to "Usage" or "Quick Start" for clarity. The "Live Demo" section can stay as is.
+**Editing README details**
+
+I need to ensure that indentation is preserved since it's markdown, not code indent. We're editing the README without needing to update the code, using functions.apply_patch. I'll also ensure that earlier references to Trend are removed from the "Getting Started" examples. 
+
+For the section under "🚀 Getting Started," I should remove the "Prerequisites" and "Installation" that focus on cloning. Instead, I’ll add a "Quick Start (Hosted)" section with clear instructions, including a code block for badge links and mentioning relevant query parameters. We can move Node.js prerequisites to the Local Development section.
+**Updating README structure**
+
+I can completely remove the "Prerequisites" section from the top of the README and replace it with a "Quick Start" section that includes bullet points and examples. The line referring to "Open http://localhost:3000" can go, since it's intended for the development server. 
+
+I’ll apply the patch by replacing content from "## 🚀 Getting Started" down to just before "## 📊 Badge Types.” I’ll keep the emoji and formatting style consistent, including three linked images. For the badges, I’ll provide placeholders for OWNER/REPO and an example using specstoryai/badges, effectively implementing the changes.
+**Crafting the patch**
+
+I need to include the old content lines to ensure the patch is applied correctly. From my earlier review, I noted the lines from L20 onwards. 
+
+I'll replace everything from "## 🚀 Getting Started" through the section that mentions "Open http://localhost:3000" and stop just before "## 📊 Badge Types." This means I'm focusing on a specific range, from L20 to L48, to replace that entire block. Now, it’s time to proceed with the patch!</details></think>
+
+---
+
+
+
+---
+
+Updated the Getting Started section to focus on the hosted service:
+
+- Replaced local install/dev instructions with a quick-start guide using `https://badges.specstory.com`
+- Added copy-paste Markdown snippets using `OWNER/REPO`
+- Included concrete examples for `specstoryai/badges`
+- Listed optional query params for quick customization
+
+Local development and deployment details remain in their dedicated sections further down the README.
+
+---
+
