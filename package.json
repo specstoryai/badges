@@ -14,6 +14,7 @@
     "jsdom": "^26.1.0",
     "lucide-react": "^0.540.0",
     "next": "15.5.0",
+    "posthog-js": "^1.261.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "roughjs": "^4.6.6",
