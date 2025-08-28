@@ -258,30 +258,32 @@ export async function GET(
     inactiveLabel.textContent = 'No activity';
     svg.appendChild(inactiveLabel);
     
-    // Color key for numbers
+    // Color key for numbers - positioned side by side
     const promptKeyText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     promptKeyText.setAttribute('x', '350');
-    promptKeyText.setAttribute('y', String(legendY + 5));
+    promptKeyText.setAttribute('y', String(legendY + 15));
     promptKeyText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     promptKeyText.setAttribute('font-size', '11');
     promptKeyText.setAttribute('fill', '#0097a7');
     promptKeyText.setAttribute('font-weight', 'bold');
-    promptKeyText.textContent = 'Prompts';
+    promptKeyText.setAttribute('dominant-baseline', 'middle');
+    promptKeyText.textContent = '# Prompts';
     svg.appendChild(promptKeyText);
     
     const commitKeyText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    commitKeyText.setAttribute('x', '350');
-    commitKeyText.setAttribute('y', String(legendY + 20));
+    commitKeyText.setAttribute('x', '420');
+    commitKeyText.setAttribute('y', String(legendY + 15));
     commitKeyText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     commitKeyText.setAttribute('font-size', '11');
     commitKeyText.setAttribute('fill', '#f57c00');
     commitKeyText.setAttribute('font-weight', 'bold');
-    commitKeyText.textContent = 'Commits';
+    commitKeyText.setAttribute('dominant-baseline', 'middle');
+    commitKeyText.textContent = '# Commits';
     svg.appendChild(commitKeyText);
 
     // Add SpecStory logo and text in bottom right on same line
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    logoGroup.setAttribute('transform', `translate(540, ${legendY - 5}) scale(0.04)`);
+    logoGroup.setAttribute('transform', `translate(540, ${legendY + 3}) scale(0.04)`);
     
     const logoPaths = [
       { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
@@ -302,7 +304,7 @@ export async function GET(
     // "by SpecStory.com" text - positioned to the right of the logo and vertically centered
     const byText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     byText.setAttribute('x', '565');
-    byText.setAttribute('y', String(legendY + 10));  // Adjusted to center with logo
+    byText.setAttribute('y', String(legendY + 15));  // Aligned with legend text
     byText.setAttribute('text-anchor', 'start');
     byText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     byText.setAttribute('font-size', '11');

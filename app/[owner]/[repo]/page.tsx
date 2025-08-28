@@ -18,7 +18,7 @@ export default function RepoPage({
   const searchParams = useSearchParams();
 
   // Get query parameters
-  const primary = searchParams.get('primary') || 'calendar'; // calendar, daily, trend, summary
+  const primary = searchParams.get('primary') || 'calendar'; // calendar, daily, summary
   const showZeroDays = searchParams.get('showZeroDays') === 'true';
   const month = searchParams.get('month'); // YYYY-MM format
   const branch = searchParams.get('branch');
@@ -62,7 +62,7 @@ export default function RepoPage({
     if (type === 'calendar' && month) {
       params.append('month', month);
     }
-    if ((type === 'daily' || type === 'trend') && showZeroDays) {
+    if (type === 'daily' && showZeroDays) {
       params.append('showZeroDays', 'true');
     }
     
@@ -135,14 +135,8 @@ export default function RepoPage({
         centered: false
       },
       daily: {
-        title: '📈 Daily Prompts',
+        title: '📈 Daily Activity',
         alt: 'Daily Activity',
-        fullWidth: false,
-        centered: false
-      },
-      trend: {
-        title: '📊 Trend Analysis',
-        alt: 'Trend',
         fullWidth: false,
         centered: false
       },
@@ -198,7 +192,7 @@ export default function RepoPage({
   };
 
   const renderBadges = () => {
-    const badges = ['calendar', 'daily', 'trend', 'summary'];
+    const badges = ['calendar', 'daily', 'summary'];
     const otherBadges = badges.filter(b => b !== primary);
     
     return (
@@ -269,13 +263,7 @@ export default function RepoPage({
                 <span className="md:hidden">View</span>
                 <span className="hidden md:inline">View Stats</span>
               </button>
-              <button
-                onClick={() => setRefreshKey(Date.now())}
-                className="px-3 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
-                title="Refresh badges"
-              >
-                🔄
-              </button>
+
             </div>
           </div>
         </div>
@@ -297,7 +285,6 @@ export default function RepoPage({
               <pre className="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto text-xs">
 {`![Activity Calendar](${getDemoUrl('calendar')})
 ![Daily Activity](${getDemoUrl('daily')})
-![Trend](${getDemoUrl('trend')})
 ![Summary](${getDemoUrl('summary')})`}
               </pre>
               <div className="mt-4">
@@ -327,7 +314,6 @@ export default function RepoPage({
                       >
                         <option value="calendar">📅 Calendar</option>
                         <option value="daily">📈 Daily</option>
-                        <option value="trend">📊 Trend</option>
                         <option value="summary">📋 Summary</option>
                       </select>
                       <p className="text-gray-500 mt-1">Choose which badge displays prominently</p>
@@ -418,7 +404,7 @@ export default function RepoPage({
                         />
                         <span className="text-sm">Include zero-activity days</span>
                       </label>
-                      <p className="text-gray-500 mt-1">Show days with no activity as gray bars/dots (daily & trend badges)</p>
+                      <p className="text-gray-500 mt-1">Show days with no activity as gray bars (daily badge)</p>
                     </div>
                   </div>
 

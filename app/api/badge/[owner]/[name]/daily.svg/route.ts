@@ -1,6 +1,5 @@
 import rough from 'roughjs/bundled/rough.cjs';
 import { JSDOM } from 'jsdom';
-import { NextResponse } from 'next/server';
 import { getStatsApiUrl } from '@/lib/config';
 
 export async function GET(
@@ -222,50 +221,51 @@ export async function GET(
     title.textContent = `Daily Activity - ${owner}/${name}`;
     svg.appendChild(title);
 
-    // Legend for bar types - bottom left
-    const legendX = 75;
-    const legendY = 285;
+    // Legend for bar types - bottom left, side by side
+    const legendY = 290;
     
     // Prompts legend
     const promptRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    promptRect.setAttribute('x', String(legendX));
-    promptRect.setAttribute('y', String(legendY - 8));
+    promptRect.setAttribute('x', '75');
+    promptRect.setAttribute('y', String(legendY - 4));
     promptRect.setAttribute('width', '12');
     promptRect.setAttribute('height', '8');
     promptRect.setAttribute('fill', '#0097a7');
     svg.appendChild(promptRect);
     
     const promptText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    promptText.setAttribute('x', String(legendX + 15));
-    promptText.setAttribute('y', String(legendY));
+    promptText.setAttribute('x', '90');
+    promptText.setAttribute('y', String(legendY + 2));
     promptText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     promptText.setAttribute('font-size', '11');
     promptText.setAttribute('fill', '#0097a7');
-    promptText.textContent = `Prompts (${data.data.dailyStats.promptsAverage.toFixed(1)}/day)`;
+    promptText.setAttribute('dominant-baseline', 'middle');
+    promptText.textContent = `# Prompts (${data.data.dailyStats.promptsAverage.toFixed(1)}/day)`;
     svg.appendChild(promptText);
     
-    // Commits legend
+    // Commits legend - positioned after prompts legend
     const commitRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    commitRect.setAttribute('x', String(legendX));
-    commitRect.setAttribute('y', String(legendY + 7));
+    commitRect.setAttribute('x', '210');
+    commitRect.setAttribute('y', String(legendY - 4));
     commitRect.setAttribute('width', '12');
     commitRect.setAttribute('height', '8');
     commitRect.setAttribute('fill', '#f57c00');
     svg.appendChild(commitRect);
     
     const commitText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    commitText.setAttribute('x', String(legendX + 15));
-    commitText.setAttribute('y', String(legendY + 15));
+    commitText.setAttribute('x', '225');
+    commitText.setAttribute('y', String(legendY + 2));
     commitText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     commitText.setAttribute('font-size', '11');
     commitText.setAttribute('fill', '#f57c00');
+    commitText.setAttribute('dominant-baseline', 'middle');
     const commitAvg = dailyData.reduce((sum: number, d: any) => sum + (d.commitCount || 0), 0) / dailyData.length;
-    commitText.textContent = `Commits (${commitAvg.toFixed(1)}/day)`;
+    commitText.textContent = `# Commits (${commitAvg.toFixed(1)}/day)`;
     svg.appendChild(commitText);
 
     // Add SpecStory logo and text in bottom right on same line
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    logoGroup.setAttribute('transform', 'translate(420, 285) scale(0.04)');
+    logoGroup.setAttribute('transform', 'translate(420, 280) scale(0.04)');
     
     const logoPaths = [
       { fill: '#52B7D6', d: 'm115.443 549.557.068-397.944L380 80.57l-.069 397.944' },
@@ -286,7 +286,7 @@ export async function GET(
     // "by SpecStory.com" text - positioned to the right of the logo and vertically centered
     const byText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     byText.setAttribute('x', '445');
-    byText.setAttribute('y', '295');
+    byText.setAttribute('y', '292');
     byText.setAttribute('text-anchor', 'start');
     byText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
     byText.setAttribute('font-size', '11');
