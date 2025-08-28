@@ -98,7 +98,8 @@ export async function GET(
           result.push({
             date: dateStr,
             promptCount: 0,
-            sessionCount: 0
+            sessionCount: 0,
+            commitCount: 0
           });
         }
       }
@@ -107,44 +108,99 @@ export async function GET(
     };
     
     const dailyData = showZeroDays ? fillMissingDays(rawDailyData) : rawDailyData;
-    const maxValue = Math.max(...dailyData.map((d: any) => d.promptCount)) || 1;
+    const maxPrompts = Math.max(...dailyData.map((d: any) => d.promptCount || 0)) || 1;
+    const maxCommits = Math.max(...dailyData.map((d: any) => d.commitCount || 0)) || 1;
     const chartWidth = 480;
     const chartHeight = 180;
-    const barWidth = chartWidth / dailyData.length;
+    const chartX = 70;
+    const chartY = 70;
+    const barGroupWidth = chartWidth / dailyData.length;
+    const barWidth = barGroupWidth * 0.35; // Each bar takes 35% of group width
+    const promptScale = chartHeight / maxPrompts;
+    const commitScale = chartHeight / maxCommits;
 
     // Determine which dates to show based on number of bars
     const showDateLabels = (index: number, total: number): boolean => {
       if (total <= 7) return true; // Show all if 7 or fewer
       if (total <= 14) return index % 2 === 0; // Show every other if 14 or fewer
-      if (total <= 21) return index % 3 === 0; // Show every 3rd if 21 or fewer
-      if (total <= 30) return index % 4 === 0; // Show every 4th if 30 or fewer
-      // For more than 30, show first, last, and every 5th
-      return index === 0 || index === total - 1 || index % 5 === 0;
+      if (total <= 30) return index % 7 === 0 || index === total - 1; // Weekly for up to a month
+      if (total <= 90) {
+        // For 1-3 months, show first, last, and roughly monthly intervals
+        return index === 0 || index === total - 1 || index % 30 === 15;
+      }
+      // For 3+ months (up to ~400 days), show first, last, and a few key points
+      const interval = Math.floor(total / 5); // Show about 5-6 labels total
+      return index === 0 || index === total - 1 || (index % interval === Math.floor(interval / 2));
     };
 
+    // Draw bars
     dailyData.forEach((day: any, i: number) => {
-      const height = Math.max((day.promptCount / maxValue) * chartHeight, 2); // Min height of 2 for visibility
-      const x = 70 + (i * barWidth);
-      const y = 250 - height;
-
-      // Use different styling for zero/minimal values
-      const fillColor = day.promptCount === 0 ? 'rgba(156, 163, 175, 0.3)' : 'rgba(99, 102, 241, 0.6)';
-      const strokeColor = day.promptCount === 0 ? '#9ca3af' : '#6366f1';
+      const promptHeight = Math.max((day.promptCount || 0) * promptScale, day.promptCount > 0 ? 2 : 0);
+      const commitHeight = Math.max((day.commitCount || 0) * commitScale, day.commitCount > 0 ? 2 : 0);
+      const groupX = chartX + i * barGroupWidth;
       
-      svg.appendChild(rc.rectangle(x, y, barWidth - 10, height, {
-        fill: fillColor,
-        fillStyle: day.promptCount === 0 ? 'solid' : 'hachure',
-        strokeWidth: 1.5,
-        stroke: strokeColor,
-        roughness: 1.5,
-        hachureGap: 4,
-        hachureAngle: 60
-      }) as any);
+      // Draw prompt bar (left, teal)
+      if (day.promptCount > 0 || showZeroDays) {
+        const promptX = groupX + barGroupWidth * 0.1;
+        const promptY = chartY + chartHeight - promptHeight;
+        
+        svg.appendChild(rc.rectangle(promptX, promptY, barWidth, promptHeight || 2, {
+          fill: day.promptCount === 0 ? 'rgba(156, 163, 175, 0.2)' : 'rgba(0, 151, 167, 0.6)',
+          fillStyle: day.promptCount === 0 ? 'solid' : 'hachure',
+          strokeWidth: 1.5,
+          stroke: day.promptCount === 0 ? '#d1d5db' : '#0097a7',
+          roughness: 1.5,
+          hachureGap: 4,
+          hachureAngle: 60
+        }) as any);
+        
+        // Add prompt count label for non-zero values
+        if (day.promptCount > 0 && dailyData.length <= 20) {
+          const promptLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          promptLabel.setAttribute('x', String(promptX + barWidth/2));
+          promptLabel.setAttribute('y', String(promptY - 3));
+          promptLabel.setAttribute('text-anchor', 'middle');
+          promptLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+          promptLabel.setAttribute('font-size', '9');
+          promptLabel.setAttribute('fill', '#0097a7');
+          promptLabel.textContent = String(day.promptCount);
+          svg.appendChild(promptLabel);
+        }
+      }
+      
+      // Draw commit bar (right, orange)
+      if (day.commitCount > 0 || showZeroDays) {
+        const commitX = groupX + barGroupWidth * 0.55;
+        const commitY = chartY + chartHeight - commitHeight;
+        
+        svg.appendChild(rc.rectangle(commitX, commitY, barWidth, commitHeight || 2, {
+          fill: day.commitCount === 0 ? 'rgba(156, 163, 175, 0.2)' : 'rgba(245, 124, 0, 0.6)',
+          fillStyle: day.commitCount === 0 ? 'solid' : 'hachure',
+          strokeWidth: 1.5,
+          stroke: day.commitCount === 0 ? '#d1d5db' : '#f57c00',
+          roughness: 1.5,
+          hachureGap: 4,
+          hachureAngle: -60
+        }) as any);
+        
+        // Add commit count label for non-zero values
+        if (day.commitCount > 0 && dailyData.length <= 20) {
+          const commitLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          commitLabel.setAttribute('x', String(commitX + barWidth/2));
+          commitLabel.setAttribute('y', String(commitY - 3));
+          commitLabel.setAttribute('text-anchor', 'middle');
+          commitLabel.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+          commitLabel.setAttribute('font-size', '9');
+          commitLabel.setAttribute('fill', '#f57c00');
+          commitLabel.textContent = String(day.commitCount);
+          svg.appendChild(commitLabel);
+        }
+      }
 
       // Only show selected date labels to avoid crowding
       if (showDateLabels(i, dailyData.length)) {
         const dateText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        dateText.setAttribute('x', String(x + (barWidth - 10) / 2));
+        dateText.setAttribute('x', String(groupX + barGroupWidth / 2));
         dateText.setAttribute('y', '270');
         dateText.setAttribute('text-anchor', 'middle');
         dateText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
@@ -163,19 +219,49 @@ export async function GET(
     title.setAttribute('font-size', '18');
     title.setAttribute('font-weight', 'bold');
     title.setAttribute('fill', '#18181b');
-    title.textContent = `Daily Prompts - ${owner}/${name}`;
+    title.textContent = `Daily Activity - ${owner}/${name}`;
     svg.appendChild(title);
 
-    const avgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    avgText.setAttribute('x', '540');
-    avgText.setAttribute('y', '30');
-    avgText.setAttribute('text-anchor', 'end');
-    avgText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-    avgText.setAttribute('font-size', '13');
-    avgText.setAttribute('fill', '#6366f1');
-    avgText.setAttribute('font-weight', 'bold');
-    avgText.textContent = `${data.data.dailyStats.promptsAverage.toFixed(1)}/day`;
-    svg.appendChild(avgText);
+    // Legend for bar types - bottom left
+    const legendX = 75;
+    const legendY = 285;
+    
+    // Prompts legend
+    const promptRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    promptRect.setAttribute('x', String(legendX));
+    promptRect.setAttribute('y', String(legendY - 8));
+    promptRect.setAttribute('width', '12');
+    promptRect.setAttribute('height', '8');
+    promptRect.setAttribute('fill', '#0097a7');
+    svg.appendChild(promptRect);
+    
+    const promptText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    promptText.setAttribute('x', String(legendX + 15));
+    promptText.setAttribute('y', String(legendY));
+    promptText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    promptText.setAttribute('font-size', '11');
+    promptText.setAttribute('fill', '#0097a7');
+    promptText.textContent = `Prompts (${data.data.dailyStats.promptsAverage.toFixed(1)}/day)`;
+    svg.appendChild(promptText);
+    
+    // Commits legend
+    const commitRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    commitRect.setAttribute('x', String(legendX));
+    commitRect.setAttribute('y', String(legendY + 7));
+    commitRect.setAttribute('width', '12');
+    commitRect.setAttribute('height', '8');
+    commitRect.setAttribute('fill', '#f57c00');
+    svg.appendChild(commitRect);
+    
+    const commitText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    commitText.setAttribute('x', String(legendX + 15));
+    commitText.setAttribute('y', String(legendY + 15));
+    commitText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+    commitText.setAttribute('font-size', '11');
+    commitText.setAttribute('fill', '#f57c00');
+    const commitAvg = dailyData.reduce((sum: number, d: any) => sum + (d.commitCount || 0), 0) / dailyData.length;
+    commitText.textContent = `Commits (${commitAvg.toFixed(1)}/day)`;
+    svg.appendChild(commitText);
 
     // Add SpecStory logo and text in bottom right on same line
     const logoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -209,9 +295,10 @@ export async function GET(
     byText.textContent = 'by SpecStory.com';
     svg.appendChild(byText);
 
+    // Left Y-axis labels (prompts)
     for (let i = 0; i <= 4; i++) {
-      const yValue = Math.round((maxValue / 4) * i);
-      const yPos = 250 - (i * 45);
+      const yValue = Math.round((maxPrompts / 4) * i);
+      const yPos = chartY + chartHeight - (i * chartHeight / 4);
       
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       label.setAttribute('x', '50');
@@ -219,7 +306,29 @@ export async function GET(
       label.setAttribute('text-anchor', 'end');
       label.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
       label.setAttribute('font-size', '10');
-      label.setAttribute('fill', '#525252');
+      label.setAttribute('fill', '#0097a7');
+      label.textContent = String(yValue);
+      svg.appendChild(label);
+    }
+    
+    // Right Y-axis labels (commits)
+    svg.appendChild(rc.line(550, 70, 550, 250, {
+      roughness: 1.2,
+      strokeWidth: 2,
+      stroke: '#525252'
+    }) as any);
+    
+    for (let i = 0; i <= 4; i++) {
+      const yValue = Math.round((maxCommits / 4) * i);
+      const yPos = chartY + chartHeight - (i * chartHeight / 4);
+      
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', '560');
+      label.setAttribute('y', String(yPos + 4));
+      label.setAttribute('text-anchor', 'start');
+      label.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+      label.setAttribute('font-size', '10');
+      label.setAttribute('fill', '#f57c00');
       label.textContent = String(yValue);
       svg.appendChild(label);
     }
