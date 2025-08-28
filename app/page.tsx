@@ -3,16 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+const DEFAULT_REPO = 'specstoryai/badges';
+
 export default function Home() {
-  const [repoInput, setRepoInput] = useState('specstoryai/tnyOffice');
-  const [repo, setRepo] = useState('specstoryai/tnyOffice');
+  const [repoInput, setRepoInput] = useState(DEFAULT_REPO);
+  const [repo, setRepo] = useState(DEFAULT_REPO);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
     // Redirect to the default repo page
-    router.replace('/specstoryai/tnyOffice');
+    router.replace(`/${DEFAULT_REPO}`);
   }, [router]);
 
   const getDemoUrl = (type: string) => {

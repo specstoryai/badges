@@ -50,6 +50,8 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ### 1. Activity Calendar
 Monthly calendar view showing daily AI coding activity with green checkmarks for active days and red X's for inactive days.
 
+![Activity Calendar preview](public/calendar.png)
+
 ```markdown
 ![Activity Calendar](https://badges.specstory.com/api/badge/owner/repo/calendar.svg)
 ```
@@ -66,6 +68,8 @@ Example:
 ### 2. Daily Activity Chart
 Shows daily prompts and commits as a hand-drawn dual bar chart with independent left/right axes, plus intelligent date labeling that adapts to data density.
 
+![Daily Activity preview](public/daily.png)
+
 ```markdown
 ![Daily Activity](https://badges.specstory.com/api/badge/owner/repo/daily.svg)
 ```
@@ -81,6 +85,8 @@ Example:
 
 ### 3. Summary Badge
 Compact badge showing total prompts, daily average, and sessions processed.
+
+![Summary preview](public/summary.png)
 
 ```markdown
 ![Summary](https://badges.specstory.com/api/badge/owner/repo/summary.svg)
